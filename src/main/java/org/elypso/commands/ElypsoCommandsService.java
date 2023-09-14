@@ -49,11 +49,14 @@ public class ElypsoCommandsService {
                 "\t\"method\":\"PRINT.Set\",\n" +
                 "\t\"params\":\n" +
                 "\t{\n" +
-                "\t\t\"data\":\"GRibbonType=" + fitaSelecionada + ";Duplex=NONE;\",\n" +
+                //"\t\t\"data\":\"GRibbonType=" + fitaSelecionada + ";Duplex=NONE;Resolution=DPI600300\",\n" +
+                "\t\t\"data\":\"FColorBrightness=VAL12;GRibbonType=" + fitaSelecionada + ";Duplex=NONE;Resolution=DPI600300\",\n" +
                 "\t\t\"timeout\":\"" + timeout + "\",\n" +
                 "\t\t\"session\":\"" + sessao + "\"\n" +
                 "\t}\n" +
                 "}";
+
+                // Duplex=HORIZONTAL -> Nao aceita
 
     }
 
