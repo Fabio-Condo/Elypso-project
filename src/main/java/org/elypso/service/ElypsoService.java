@@ -43,7 +43,7 @@ public class ElypsoService {
 
     public String definirBitmapImpressaoFrontal() throws IOException {
         Socket socket = socketService.iniciarSocket();
-        String filePath = "imagens/safeline-front.bmp";
+        String filePath = "imagens/cartao_de_saude_test_print_front.bmp";
         String imagemEmDadosBase64 = converterBMPImageParaString(filePath);
         String request = elypsoCommandsService.gerarComandoDefinirBitmapImpressaoFrontal(imagemEmDadosBase64);
         return pegarResposta(socket, request);
@@ -51,7 +51,7 @@ public class ElypsoService {
 
     public String definirBitmapImpressaoTrazeiro() throws IOException {
         Socket socket = socketService.iniciarSocket();
-        String filePath = "imagens/safeline-back.bmp";
+        String filePath = "imagens/cartao_de_saude_test_print_back.bmp";
         String imagemEmDadosBase64 = converterBMPImageParaString(filePath);
         String request = elypsoCommandsService.gerarComandoDefinirBitmapImpressaoTrazeiro(imagemEmDadosBase64);
         return pegarResposta(socket, request);
