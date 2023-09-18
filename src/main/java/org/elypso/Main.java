@@ -3,6 +3,9 @@ package org.elypso;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
@@ -19,39 +22,40 @@ public class Main {
 
         /*
         try {
-            String ip = "127.0.0.1";
-            int port = 18000;
-            char[] data = new char[1024];
-            String request = "{\"jsonrpc\":\"2.0\",\"id\":\"1\",\"method\":\"CMD.SendCommand\",\"params\":{\"command\":\"Rfv\", \"device\":\"Evolis ElypsoCommandsService\", \"timeout\":\"5000\"}}";
-            String answer = "";
-
-            Socket socket = new Socket(ip,port);
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-            DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-
-            byte[] byteRequest = request.getBytes("UTF-8");
-
-            out.write(byteRequest);
-
-            out.flush();
-
-            while( (br.read(data)) != -1 )
-            {
-                answer = new String(data);
-                System.out.println(answer);
-            }
-
-            socket.close();
-        }
-        catch (Exception e)
-        {
-            System.out.println("Communication failed :\n");
-            System.out.println(" - check TCP communication is activated\n");
-            System.out.println(" - check the service is activated\n");
-            System.out.println(" - check your IP address and port\n");
+            adicionarNomeNaImagem("imagens/cartao_de_saude_test_print_front.bmp", "imagem_com_nome.bmp", "FABIO CONDO");
+            System.out.println("Nome adicionado com sucesso!");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         */
+
+    }
+
+    public static void adicionarNomeNaImagem(String imagePath, String outputImagePath, String nome) throws IOException {
+        // Carrega a imagem original
+        File inputFile = new File(imagePath);
+        BufferedImage imagem = ImageIO.read(inputFile);
+
+        // Cria um objeto Graphics2D para desenhar na imagem
+        Graphics2D g2d = imagem.createGraphics();
+
+        // Configura a fonte e a cor do texto
+        Font fonte = new Font("Arial", Font.BOLD, 36);
+        g2d.setFont(fonte);
+        g2d.setColor(Color.WHITE);
+
+        // Define a posição onde o nome será adicionado (neste exemplo, no canto superior esquerdo)
+        int x = 70;
+        int y = 500;
+
+        // Desenha o nome na imagem
+        g2d.drawString(nome, x, y);
+
+        // Libera os recursos do objeto Graphics2D
+        g2d.dispose();
+
+        // Salva a imagem resultante
+        File outputFile = new File(outputImagePath);
+        ImageIO.write(imagem, "bmp", outputFile);
     }
 }
