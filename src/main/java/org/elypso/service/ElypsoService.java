@@ -167,7 +167,7 @@ public class ElypsoService {
         Graphics2D g2d_numero = imagem.createGraphics();
 
         // Configura a fonte e a cor do texto
-        Font fonteNome = new Font("Arial", Font.PLAIN, 50);
+        Font fonteNome = new Font("Arial", Font.BOLD, 50);
         g2d_nome.setFont(fonteNome);
         g2d_nome.setColor(Color.WHITE);
 
