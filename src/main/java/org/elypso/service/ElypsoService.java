@@ -51,9 +51,10 @@ public class ElypsoService {
         String imagePath = "imagens/cartao_de_saude_test_print_front.bmp";
         String outputImagePath = "imagem_com_nome.bmp";
         String nome = "FABIO CONDO";
+        String numero = "MSSSC23008010 001";
 
         try {
-            adicionarNomeNaImagem(imagePath, outputImagePath, nome);
+            adicionarNomeNumeroNaImagem(imagePath, outputImagePath, nome, numero);
             System.out.println("Nome adicionado com sucesso!");
         } catch (IOException e) {
             e.printStackTrace();
@@ -156,28 +157,37 @@ public class ElypsoService {
         return answer;
     }
 
-    public void adicionarNomeNaImagem(String imagePath, String outputImagePath, String nome) throws IOException {
+    public void adicionarNomeNumeroNaImagem(String imagePath, String outputImagePath, String nome, String numero) throws IOException {
         // Carrega a imagem original
         File inputFile = new File(imagePath);
         BufferedImage imagem = ImageIO.read(inputFile);
 
-        // Cria um objeto Graphics2D para desenhar na imagem
-        Graphics2D g2d = imagem.createGraphics();
+        // Cria um objeto Graphics2D para desenhar na imagem (Neste caso, crio 2 objectos, nome e numero)
+        Graphics2D g2d_nome = imagem.createGraphics();
+        Graphics2D g2d_numero = imagem.createGraphics();
 
         // Configura a fonte e a cor do texto
-        Font fonte = new Font("Arial", Font.PLAIN, 50);
-        g2d.setFont(fonte);
-        g2d.setColor(Color.WHITE);
+        Font fonteNome = new Font("Arial", Font.PLAIN, 50);
+        g2d_nome.setFont(fonteNome);
+        g2d_nome.setColor(Color.WHITE);
 
-        // Define a posição onde o nome será adicionado (neste exemplo, no canto superior esquerdo)
-        int x = 70;
-        int y = 500;
+        Font fonteNumero = new Font("Arial", Font.PLAIN, 30);
+        g2d_numero.setFont(fonteNumero);
+        g2d_numero.setColor(Color.WHITE);
 
-        // Desenha o nome na imagem
-        g2d.drawString(nome, x, y);
+        // Define a posição onde o nome e o número serão adicionados (neste exemplo, no canto superior esquerdo)
+        int xNome = 70;
+        int yNome = 500;
+        int xNumero = 70;
+        int yNumero = 600;
+
+        // Desenha o nome e o número na imagem
+        g2d_nome.drawString(nome, xNome, yNome);
+        g2d_numero.drawString(numero, xNumero, yNumero);
 
         // Libera os recursos do objeto Graphics2D
-        g2d.dispose();
+        g2d_nome.dispose();
+        g2d_numero.dispose();
 
         // Salva a imagem resultante
         File outputFile = new File(outputImagePath);
