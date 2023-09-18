@@ -179,7 +179,7 @@ public class ElypsoService {
         int xNome = 70;
         int yNome = 500;
         int xNumero = 70;
-        int yNumero = 600;
+        int yNumero = 620;
 
         // Desenha o nome e o número na imagem
         g2d_nome.drawString(nome, xNome, yNome);
