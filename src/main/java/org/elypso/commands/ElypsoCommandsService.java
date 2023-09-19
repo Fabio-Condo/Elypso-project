@@ -7,8 +7,8 @@ public class ElypsoCommandsService {
 
     String impressora = "Evolis Elypso";
     String timeout = "5000";
-    //String fitaSelecionada = "RM_KO";
-    String fitaSelecionada = "RC_YMCKO"; // Colorida
+    String fitaSelecionada = "RM_KO";
+    //String fitaSelecionada = "RC_YMCKO"; // Colorida
     String sessao = "JOB000001";
 
     public String gerarComandoIniciarSequencia() {

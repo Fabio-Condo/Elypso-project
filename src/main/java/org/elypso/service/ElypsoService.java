@@ -1,6 +1,9 @@
 package org.elypso.service;
 
 import org.elypso.commands.ElypsoCommandsService;
+import org.elypso.model.Pedido;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,8 +16,13 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Base64;
 
+import static org.elypso.constatnt.ComandosElypsoPrimacy.*;
+
+
 @Service
 public class ElypsoService {
+
+    private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     ElypsoCommandsService elypsoCommandsService;
 
@@ -24,6 +32,39 @@ public class ElypsoService {
     public ElypsoService(ElypsoCommandsService elypsoCommandsService, SocketService socketService) {
         this.elypsoCommandsService = elypsoCommandsService;
         this.socketService = socketService;
+    }
+
+    public String executarOperacaoUnica(Pedido pedido) throws IOException {
+
+        String answer = "";
+
+        for (int i = 1; i < FINALIZAR_SEQUENCIA; i++) {
+
+            if (i == INICIALIZAR_SEQUENCIA) {
+                answer = iniciarSequencia();
+            } else if (i == INICIALIZAR_PROCESSO_IMPRESSAO) {
+                answer = inicializarProcessoImpressao();
+            } else if (i == CONFIGURAR_PROCESSO_IMPRESSAO) {
+                answer = configurarProcessoImpressao();
+            } else if (i == DEFINIR_BITMAP_FRONTAL) {
+                answer = definirBitmapImpressaoFrontal(pedido);
+            } else if (i == DEFINIR_BITMAP_TRAZEIRO) {
+                answer = definirBitmapImpressaoTrazeiro();
+            } else if (i == REALIZAR_IMPRESSAO) {
+                answer = realizarImpressao();
+            } else {
+                answer = finalizarImpressao();  // I = FINALIZAR_SEQUENCIA
+            }
+
+            if(answer.contains("error")){
+                LOGGER.error("Erro do pedido " + i);
+                // Lancar uma exception
+                break;
+            }
+
+        }
+
+        return "";
     }
 
     public String iniciarSequencia() throws IOException {
@@ -44,18 +85,14 @@ public class ElypsoService {
         return pegarResposta(socket, request);
     }
 
-    public String definirBitmapImpressaoFrontal() throws IOException {
+    public String definirBitmapImpressaoFrontal(Pedido pedido) throws IOException {
         Socket socket = socketService.iniciarSocket();
-        //String filePath = "imagens/cartao_de_saude_test_print_front.bmp";
 
         String imagePath = "imagens/cartao_de_saude_test_print_front.bmp";
         String outputImagePath = "imagem_com_nome.bmp";
-        String nome = "FABIO CONDO";
-        String numero = "MSSSC23008010 001";
 
         try {
-            adicionarNomeNumeroNaImagem(imagePath, outputImagePath, nome, numero);
-            System.out.println("Nome adicionado com sucesso!");
+            adicionarNomeNumeroNaImagem(imagePath, outputImagePath, pedido);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -138,26 +175,25 @@ public class ElypsoService {
 
         while( (br.read(data)) != -1 ) {
             answer = new String(data);
-            System.out.println(answer);
             break;
         }
 
-        /*
-        for (int i=0; i<answer.length(); i++) {  // Percorrer para buscar oque interessa
-            char c = answer.charAt(i);
-            if(c == "}".charAt(0)){
-                break;
-            }
-            System.out.println(c);
-        }
-        */
-
         socket.close();
 
-        return answer;
+        LOGGER.info("Pedido: " + request);
+        LOGGER.info("Resposta: " + answer.replaceAll("\u0000", ""));
+
+        return answer.replaceAll("\u0000", ""); // This is done because the Evolis Socket returns a lot of null objects which make the files much larger.
+
     }
 
-    public void adicionarNomeNumeroNaImagem(String imagePath, String outputImagePath, String nome, String numero) throws IOException {
+    public void adicionarNomeNumeroNaImagem(String imagePath, String outputImagePath, Pedido pedido) throws IOException {
+
+        if(pedido.getNome().equals("") || pedido.getNumero().equals("")){
+            LOGGER.error("O nome ou número está vázio");
+            // Lanca uma exception
+        }
+
         // Carrega a imagem original
         File inputFile = new File(imagePath);
         BufferedImage imagem = ImageIO.read(inputFile);
@@ -182,8 +218,8 @@ public class ElypsoService {
         int yNumero = 620;
 
         // Desenha o nome e o número na imagem
-        g2d_nome.drawString(nome, xNome, yNome);
-        g2d_numero.drawString(numero, xNumero, yNumero);
+        g2d_nome.drawString(pedido.getNome(), xNome, yNome);
+        g2d_numero.drawString(pedido.getNumero(), xNumero, yNumero);
 
         // Libera os recursos do objeto Graphics2D
         g2d_nome.dispose();
