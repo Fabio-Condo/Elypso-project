@@ -151,7 +151,6 @@ public class ElypsoService {
 
     public String converterBMPImageParaString(String filePath) throws IOException {
         // Caminho para o arquivo BMP
-        //String filePath = "imagens/BackVarnish.bmp";
         //String filePath = "imagens/safeline.bmp";
 
         // Lê os bytes da imagem BMP
