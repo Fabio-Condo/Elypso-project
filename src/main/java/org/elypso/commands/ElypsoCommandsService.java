@@ -126,6 +126,22 @@ public class ElypsoCommandsService {
                 "}";
     }
 
+    public String gerarComandoFinalizarSequencia() {
+        String com = "Se";
+
+        return "{\n" +
+                "\t\"jsonrpc\":\"2.0\",\n" +
+                "\t\"id\":\"1\",\n" +
+                "\t\"method\":\"CMD.SendCommand\",\n" +
+                "\t\"params\":\n" +
+                "\t{\n" +
+                "\t\t\"command\":\"" + com + "\",\n" +
+                "\t\t\"device\":\"" + impressora + "\", \n" +
+                "\t\t\"timeout\":\"" + timeout + "\"\n" +
+                "\t}\n" +
+                "}";
+    }
+
     public String gerarComandosLigarOuReinicializarHardwareImpressora() {
         String com = "Srs";
 

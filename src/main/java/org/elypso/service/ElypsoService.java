@@ -52,8 +52,10 @@ public class ElypsoService {
                 answer = definirBitmapImpressaoTrazeiro();
             } else if (i == REALIZAR_IMPRESSAO) {
                 answer = realizarImpressao();
+            } else if (i == FINALIZAR_IMPRESSAO) {
+                answer = finalizarImpressao();
             } else {
-                answer = finalizarImpressao();  // I = FINALIZAR_SEQUENCIA
+                answer = finalizarSequencia();  // I = FINALIZAR_SEQUENCIA
             }
 
             if(answer.contains("error")){
@@ -119,6 +121,12 @@ public class ElypsoService {
     public String finalizarImpressao() throws IOException {
         Socket socket = socketService.iniciarSocket();
         String request = elypsoCommandsService.gerarComandoFinalizarImpressao();
+        return pegarResposta(socket, request);
+    }
+
+    public String finalizarSequencia() throws IOException {
+        Socket socket = socketService.iniciarSocket();
+        String request = elypsoCommandsService.gerarComandoFinalizarSequencia();
         return pegarResposta(socket, request);
     }
 
