@@ -1,4 +1,4 @@
-package org.elypso.model;
+package org.elypso.domain;
 
 public class RespostaElypso {
 

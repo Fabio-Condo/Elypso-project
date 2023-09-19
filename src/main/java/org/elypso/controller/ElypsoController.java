@@ -1,6 +1,8 @@
 package org.elypso.controller;
 
-import org.elypso.model.Pedido;
+import org.elypso.domain.Pedido;
+import org.elypso.exception.domain.NomeOuNumeroVazioException;
+import org.elypso.exception.domain.PedidoComandoException;
 import org.elypso.service.ElypsoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +21,7 @@ public class ElypsoController {
     }
 
     @PostMapping("/executarOperacaoUnica")
-    public ResponseEntity<Pedido> executarOperacaoUnica(@RequestBody Pedido pedido) throws IOException {
+    public ResponseEntity<Pedido> executarOperacaoUnica(@RequestBody Pedido pedido) throws IOException, PedidoComandoException, NomeOuNumeroVazioException {
         return ResponseEntity.status(HttpStatus.OK).body(elypsoService.executarOperacaoUnica(pedido));
     }
 
@@ -39,7 +41,7 @@ public class ElypsoController {
     }
 
     @GetMapping("/definirBitmapImpressaoFrontal")
-    public ResponseEntity<String> definirBitmapImpressaoFrontal() throws IOException {
+    public ResponseEntity<String> definirBitmapImpressaoFrontal() throws IOException, NomeOuNumeroVazioException {
         Pedido pedido = new Pedido("NOME TESTE", "NUMERO TESTE");
         return ResponseEntity.status(HttpStatus.OK).body(elypsoService.definirBitmapImpressaoFrontal(pedido));
     }

@@ -1,7 +1,9 @@
 package org.elypso.service;
 
 import org.elypso.commands.ElypsoCommandsService;
-import org.elypso.model.Pedido;
+import org.elypso.domain.Pedido;
+import org.elypso.exception.domain.NomeOuNumeroVazioException;
+import org.elypso.exception.domain.PedidoComandoException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +36,7 @@ public class ElypsoService {
         this.socketService = socketService;
     }
 
-    public Pedido executarOperacaoUnica(Pedido pedido) throws IOException {
+    public Pedido executarOperacaoUnica(Pedido pedido) throws IOException, PedidoComandoException, NomeOuNumeroVazioException {
 
         String answer = "";
 
@@ -60,8 +62,7 @@ public class ElypsoService {
 
             if(answer.contains("error")){
                 LOGGER.error("Erro do pedido " + i);
-                // Lancar uma exception
-                break;
+                throw new PedidoComandoException("Erro do pedido " + i); // Vai lancar a Excepption e fazer um break
             }
 
         }
@@ -87,7 +88,7 @@ public class ElypsoService {
         return pegarResposta(socket, request);
     }
 
-    public String definirBitmapImpressaoFrontal(Pedido pedido) throws IOException {
+    public String definirBitmapImpressaoFrontal(Pedido pedido) throws IOException, NomeOuNumeroVazioException {
         Socket socket = socketService.iniciarSocket();
 
         String imagePath = "imagens/cartao_de_saude_test_print_front.bmp";
@@ -195,11 +196,11 @@ public class ElypsoService {
 
     }
 
-    public void adicionarNomeNumeroNaImagem(String imagePath, String outputImagePath, Pedido pedido) throws IOException {
+    public void adicionarNomeNumeroNaImagem(String imagePath, String outputImagePath, Pedido pedido) throws IOException, NomeOuNumeroVazioException {
 
         if(pedido.getNome().equals("") || pedido.getNumero().equals("")){
             LOGGER.error("O nome ou número está vázio");
-            // Lanca uma exception
+            throw new NomeOuNumeroVazioException("O nome ou número está vázio");
         }
 
         // Carrega a imagem original
