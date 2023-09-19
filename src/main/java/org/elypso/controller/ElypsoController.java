@@ -19,7 +19,7 @@ public class ElypsoController {
     }
 
     @PostMapping("/executarOperacaoUnica")
-    public ResponseEntity<String> executarOperacaoUnica(@RequestBody Pedido pedido) throws IOException {
+    public ResponseEntity<Pedido> executarOperacaoUnica(@RequestBody Pedido pedido) throws IOException {
         return ResponseEntity.status(HttpStatus.OK).body(elypsoService.executarOperacaoUnica(pedido));
     }
 

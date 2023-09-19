@@ -34,7 +34,7 @@ public class ElypsoService {
         this.socketService = socketService;
     }
 
-    public String executarOperacaoUnica(Pedido pedido) throws IOException {
+    public Pedido executarOperacaoUnica(Pedido pedido) throws IOException {
 
         String answer = "";
 
@@ -64,7 +64,7 @@ public class ElypsoService {
 
         }
 
-        return "";
+        return pedido;
     }
 
     public String iniciarSequencia() throws IOException {

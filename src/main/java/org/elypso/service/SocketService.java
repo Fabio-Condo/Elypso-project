@@ -17,7 +17,7 @@ public class SocketService {
             int port = 18000;
             Socket socket = new Socket(ip,port);
             //socket.setSoTimeout(5000);
-            LOGGER.info("Connected");
+            LOGGER.info("URL: " + ip + ":" + port + " connected");
             //socket.close();
             return socket; // Analizar
 

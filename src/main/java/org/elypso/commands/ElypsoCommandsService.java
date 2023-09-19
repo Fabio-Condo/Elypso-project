@@ -35,7 +35,7 @@ public class ElypsoCommandsService {
                 "\t\"params\":\n" +
                 "\t{\n" +
                 "\t\t\"device\":\"" + impressora + "\",\n" +
-                //"\t\t\"session\":\"" + sessao + "\",\n" +
+                "\t\t\"session\":\"" + sessao + "\",\n" +
                 "\t\t\"timeout\":\"" + timeout + "\"\n" +
                 "\t}\n" +
                 "}\n";
