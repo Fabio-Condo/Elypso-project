@@ -17,7 +17,7 @@ public class ElypsoCommandsService {
         return "{\n" +
                 "\t\"jsonrpc\":\"2.0\",\n" +
                 "\t\"id\":\"1\",\n" +
-                "\t\"method\":\"CMD.SendCommands\",\n" +
+                "\t\"method\":\"CMD.SendCommand\",\n" +
                 "\t\"params\":\n" +
                 "\t{\n" +
                 "\t\t\"command\":\"" + com + "\",\n" +

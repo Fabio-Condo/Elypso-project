@@ -66,8 +66,8 @@ public class ElypsoService {
             if(answer.getError() != null){
                 LOGGER.error("Erro na operação " + i);
                 LOGGER.error("Codigo do erro (Printer Center): " + answer.getError().getCode());
-                LOGGER.error("Messagem do erro (Printer Center): " + answer.getError().getMessage());
-                throw new PedidoComandoException("Erro na operação " + i + ". Messagem do printer center: " + answer.getError().getMessage()); // Vai lancar a Excepption e fazer um break
+                LOGGER.error("Mensagem do erro (Printer Center): " + answer.getError().getMessage());
+                throw new PedidoComandoException("Erro na operação " + i + ". Mensagem do printer center: " + answer.getError().getMessage()); // Vai lancar a Excepption e fazer um break
             }
 
         }
