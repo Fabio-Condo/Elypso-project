@@ -1,17 +1,17 @@
 package org.elypso.domain;
 
-public class ElypsoResponse {
+public class PrinterCenterResponse {
 
     private Long id;
     private String jsonrpc;
     private String result;
 
-    private ElypsoError error;
+    private PrinterCenterErrorResponse error;
 
-    public ElypsoResponse() {
+    public PrinterCenterResponse() {
     }
 
-    public ElypsoResponse(Long id, String jsonrpc, String result, ElypsoError error) {
+    public PrinterCenterResponse(Long id, String jsonrpc, String result, PrinterCenterErrorResponse error) {
         this.id = id;
         this.jsonrpc = jsonrpc;
         this.result = result;
@@ -42,11 +42,11 @@ public class ElypsoResponse {
         this.result = result;
     }
 
-    public ElypsoError getError() {
+    public PrinterCenterErrorResponse getError() {
         return error;
     }
 
-    public void setError(ElypsoError error) {
+    public void setError(PrinterCenterErrorResponse error) {
         this.error = error;
     }
 }

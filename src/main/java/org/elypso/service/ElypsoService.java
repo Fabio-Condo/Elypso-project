@@ -2,7 +2,7 @@ package org.elypso.service;
 
 import com.google.gson.Gson;
 import org.elypso.commands.ElypsoCommandsService;
-import org.elypso.domain.ElypsoResponse;
+import org.elypso.domain.PrinterCenterResponse;
 import org.elypso.domain.Pedido;
 import org.elypso.exception.domain.NomeOuNumeroVazioException;
 import org.elypso.exception.domain.PedidoComandoException;
@@ -19,7 +19,6 @@ import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Base64;
-import java.util.Objects;
 
 import static org.elypso.constatnt.ComandosElypsoPrimacy.*;
 
@@ -41,33 +40,33 @@ public class ElypsoService {
 
     public Pedido executarOperacaoUnica(Pedido pedido) throws IOException, PedidoComandoException, NomeOuNumeroVazioException {
 
-        ElypsoResponse answer;
+        PrinterCenterResponse printerCenterResponse;
 
         for (int i = 1; i < FINALIZAR_SEQUENCIA; i++) {
 
             if (i == INICIALIZAR_SEQUENCIA) {
-                answer = iniciarSequencia();
+                printerCenterResponse = iniciarSequencia();
             } else if (i == INICIALIZAR_PROCESSO_IMPRESSAO) {
-                answer = inicializarProcessoImpressao();
+                printerCenterResponse = inicializarProcessoImpressao();
             } else if (i == CONFIGURAR_PROCESSO_IMPRESSAO) {
-                answer = configurarProcessoImpressao();
+                printerCenterResponse = configurarProcessoImpressao();
             } else if (i == DEFINIR_BITMAP_FRONTAL) {
-                answer = definirBitmapImpressaoFrontal(pedido);
+                printerCenterResponse = definirBitmapImpressaoFrontal(pedido);
             } else if (i == DEFINIR_BITMAP_TRAZEIRO) {
-                answer = definirBitmapImpressaoTrazeiro();
+                printerCenterResponse = definirBitmapImpressaoTrazeiro();
             } else if (i == REALIZAR_IMPRESSAO) {
-                answer = realizarImpressao();
+                printerCenterResponse = realizarImpressao();
             } else if (i == FINALIZAR_IMPRESSAO) {
-                answer = finalizarImpressao();
+                printerCenterResponse = finalizarImpressao();
             } else {
-                answer = finalizarSequencia();  // I = FINALIZAR_SEQUENCIA
+                printerCenterResponse = finalizarSequencia();  // I = FINALIZAR_SEQUENCIA
             }
 
-            if(answer.getError() != null){
+            if(printerCenterResponse.getError() != null){
                 LOGGER.error("Erro na operação " + i);
-                LOGGER.error("Codigo do erro (Printer Center): " + answer.getError().getCode());
-                LOGGER.error("Mensagem do erro (Printer Center): " + answer.getError().getMessage());
-                throw new PedidoComandoException("Erro na operação " + i + ". Mensagem do printer center: " + answer.getError().getMessage()); // Vai lancar a Excepption e fazer um break
+                LOGGER.error("Codigo do erro (Printer Center): " + printerCenterResponse.getError().getCode());
+                LOGGER.error("Mensagem do erro (Printer Center): " + printerCenterResponse.getError().getMessage());
+                throw new PedidoComandoException("Erro na operação " + i + ". Mensagem do printer center: " + printerCenterResponse.getError().getMessage()); // Vai lancar a Excepption e fazer um break
             }
 
         }
@@ -75,25 +74,25 @@ public class ElypsoService {
         return pedido;
     }
 
-    public ElypsoResponse iniciarSequencia() throws IOException {
+    public PrinterCenterResponse iniciarSequencia() throws IOException {
         Socket socket = socketService.iniciarSocket();
         String request = elypsoCommandsService.gerarComandoIniciarSequencia();
         return pegarResposta(socket, request);
     }
 
-    public ElypsoResponse inicializarProcessoImpressao() throws IOException {
+    public PrinterCenterResponse inicializarProcessoImpressao() throws IOException {
         Socket socket = socketService.iniciarSocket();
         String request = elypsoCommandsService.gerarComandoInicializarProcessoImpressao();
         return pegarResposta(socket, request);
     }
 
-    public ElypsoResponse configurarProcessoImpressao() throws IOException {
+    public PrinterCenterResponse configurarProcessoImpressao() throws IOException {
         Socket socket = socketService.iniciarSocket();
         String request = elypsoCommandsService.gerarComandoConfigurarProcessoImpressao();
         return pegarResposta(socket, request);
     }
 
-    public ElypsoResponse definirBitmapImpressaoFrontal(Pedido pedido) throws IOException, NomeOuNumeroVazioException {
+    public PrinterCenterResponse definirBitmapImpressaoFrontal(Pedido pedido) throws IOException, NomeOuNumeroVazioException {
         Socket socket = socketService.iniciarSocket();
 
         String imagePath = "imagens/cartao_de_saude_test_print_front.bmp";
@@ -110,7 +109,7 @@ public class ElypsoService {
         return pegarResposta(socket, request);
     }
 
-    public ElypsoResponse definirBitmapImpressaoTrazeiro() throws IOException {
+    public PrinterCenterResponse definirBitmapImpressaoTrazeiro() throws IOException {
         Socket socket = socketService.iniciarSocket();
         String filePath = "imagens/cartao_de_saude_test_print_back.bmp";
         String imagemEmDadosBase64 = converterBMPImageParaString(filePath);
@@ -118,37 +117,37 @@ public class ElypsoService {
         return pegarResposta(socket, request);
     }
 
-    public ElypsoResponse realizarImpressao() throws IOException {
+    public PrinterCenterResponse realizarImpressao() throws IOException {
         Socket socket = socketService.iniciarSocket();
         String request = elypsoCommandsService.gerarComandoRealizarImpressao();
         return pegarResposta(socket, request);
     }
 
-    public ElypsoResponse finalizarImpressao() throws IOException {
+    public PrinterCenterResponse finalizarImpressao() throws IOException {
         Socket socket = socketService.iniciarSocket();
         String request = elypsoCommandsService.gerarComandoFinalizarImpressao();
         return pegarResposta(socket, request);
     }
 
-    public ElypsoResponse finalizarSequencia() throws IOException {
+    public PrinterCenterResponse finalizarSequencia() throws IOException {
         Socket socket = socketService.iniciarSocket();
         String request = elypsoCommandsService.gerarComandoFinalizarSequencia();
         return pegarResposta(socket, request);
     }
 
-    public ElypsoResponse ligarOuReinicializarHardwareImpressora() throws IOException {
+    public PrinterCenterResponse ligarOuReinicializarHardwareImpressora() throws IOException {
         Socket socket = socketService.iniciarSocket();
         String request = elypsoCommandsService.gerarComandosLigarOuReinicializarHardwareImpressora();
         return pegarResposta(socket, request);
     }
 
-    public ElypsoResponse verificarStatus() throws IOException {
+    public PrinterCenterResponse verificarStatus() throws IOException {
         Socket socket = socketService.iniciarSocket();
         String request = elypsoCommandsService.gerarComandoVerificarStatusImpressora();
         return pegarResposta(socket, request);
     }
 
-    public ElypsoResponse reinicializarComunicacoesComAImpressora() throws IOException {
+    public PrinterCenterResponse reinicializarComunicacoesComAImpressora() throws IOException {
         Socket socket = socketService.iniciarSocket();
         String request = elypsoCommandsService.gerarComandoReinicializarComunicacoesComAImpressora();
         return pegarResposta(socket, request);
@@ -170,7 +169,7 @@ public class ElypsoService {
         return base64EncodedImage;
     }
 
-    public ElypsoResponse pegarResposta(Socket socket, String request ) throws IOException {
+    public PrinterCenterResponse pegarResposta(Socket socket, String request ) throws IOException {
 
         char[] data = new char[1024];
 
@@ -199,22 +198,23 @@ public class ElypsoService {
         return converterJsonEmObjecto(answer);
     }
 
-    public ElypsoResponse converterJsonEmObjecto(String answer){
+    public PrinterCenterResponse converterJsonEmObjecto(String answer){
         String jsonString = answer.replaceAll("\u0000", "");
 
         // Criar um objeto Gson
         Gson gson = new Gson();
 
         // Converter a string JSON em um objeto Java
-        ElypsoResponse elypsoResponse = gson.fromJson(jsonString, ElypsoResponse.class);
+        PrinterCenterResponse printerCenterResponse = gson.fromJson(jsonString, PrinterCenterResponse.class);
 
         // Agora você pode acessar os campos do objeto Java
-        //System.out.println("id: " + elypsoResponse.getId());
-        //System.out.println("jsonrpc: " + elypsoResponse.getJsonrpc());
-        //System.out.println("result: " + elypsoResponse.getResult());
-        //System.out.println("error code: " + elypsoResponse.getError().getCode());
-        //System.out.println("error message: " + elypsoResponse.getError().getMessage());
-        return elypsoResponse;
+        //System.out.println("id: " + printerCenterResponse.getId());
+        //System.out.println("jsonrpc: " + printerCenterResponse.getJsonrpc());
+        //System.out.println("result: " + printerCenterResponse.getResult());
+        //System.out.println("error code: " + printerCenterResponse.getError().getCode());
+        //System.out.println("error message: " + printerCenterResponse.getError().getMessage());
+
+        return printerCenterResponse;
     }
 
     public void adicionarNomeNumeroNaImagem(String imagePath, String outputImagePath, Pedido pedido) throws IOException, NomeOuNumeroVazioException {

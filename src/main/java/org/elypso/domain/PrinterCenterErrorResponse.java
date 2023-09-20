@@ -1,13 +1,13 @@
 package org.elypso.domain;
 
-public class ElypsoError {
+public class PrinterCenterErrorResponse {
     private String code;
     private String message;
 
-    public ElypsoError() {
+    public PrinterCenterErrorResponse() {
     }
 
-    public ElypsoError(String code, String message) {
+    public PrinterCenterErrorResponse(String code, String message) {
         this.code = code;
         this.message = message;
     }
