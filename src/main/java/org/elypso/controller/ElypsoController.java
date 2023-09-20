@@ -1,5 +1,6 @@
 package org.elypso.controller;
 
+import org.elypso.domain.ElypsoResponse;
 import org.elypso.domain.Pedido;
 import org.elypso.exception.domain.NomeOuNumeroVazioException;
 import org.elypso.exception.domain.PedidoComandoException;
@@ -26,53 +27,58 @@ public class ElypsoController {
     }
 
     @GetMapping("/iniciarSequencia")
-    public ResponseEntity<String> iniciarSequencia() throws IOException {
+    public ResponseEntity<ElypsoResponse> iniciarSequencia() throws IOException {
         return ResponseEntity.status(HttpStatus.OK).body(elypsoService.iniciarSequencia());
     }
 
     @GetMapping("/inicializarProcessoImpressao")
-    public ResponseEntity<String> inicializarProcessoImpressao() throws IOException {
+    public ResponseEntity<ElypsoResponse> inicializarProcessoImpressao() throws IOException {
         return ResponseEntity.status(HttpStatus.OK).body(elypsoService.inicializarProcessoImpressao());
     }
 
     @GetMapping("/configurarProcessoImpressao")
-    public ResponseEntity<String> configurarProcessoImpressao() throws IOException {
+    public ResponseEntity<ElypsoResponse> configurarProcessoImpressao() throws IOException {
         return ResponseEntity.status(HttpStatus.OK).body(elypsoService.configurarProcessoImpressao());
     }
 
     @GetMapping("/definirBitmapImpressaoFrontal")
-    public ResponseEntity<String> definirBitmapImpressaoFrontal() throws IOException, NomeOuNumeroVazioException {
+    public ResponseEntity<ElypsoResponse> definirBitmapImpressaoFrontal() throws IOException, NomeOuNumeroVazioException {
         Pedido pedido = new Pedido("NOME TESTE", "NUMERO TESTE");
         return ResponseEntity.status(HttpStatus.OK).body(elypsoService.definirBitmapImpressaoFrontal(pedido));
     }
 
     @GetMapping("/definirBitmapImpressaoTrazeiro")
-    public ResponseEntity<String> definirBitmapImpressaoTrazeiro() throws IOException {
+    public ResponseEntity<ElypsoResponse> definirBitmapImpressaoTrazeiro() throws IOException {
         return ResponseEntity.status(HttpStatus.OK).body(elypsoService.definirBitmapImpressaoTrazeiro());
     }
 
     @GetMapping("/realizarImpressao")
-    public ResponseEntity<String> realizarImpressao() throws IOException {
+    public ResponseEntity<ElypsoResponse> realizarImpressao() throws IOException {
         return ResponseEntity.status(HttpStatus.OK).body(elypsoService.realizarImpressao());
     }
 
     @GetMapping("/finalizarImpressao")
-    public ResponseEntity<String> finalizarImpressao() throws IOException {
+    public ResponseEntity<ElypsoResponse> finalizarImpressao() throws IOException {
         return ResponseEntity.status(HttpStatus.OK).body(elypsoService.finalizarImpressao());
     }
 
+    @GetMapping("/finalizarSequencia")
+    public ResponseEntity<ElypsoResponse> finalizarSequencia() throws IOException {
+        return ResponseEntity.status(HttpStatus.OK).body(elypsoService.finalizarSequencia());
+    }
+
     @GetMapping("/ligarOuReinicializarHardwareImpressora")
-    public ResponseEntity<String> ligarOuReinicializarHardwareImpressora() throws IOException {
+    public ResponseEntity<ElypsoResponse> ligarOuReinicializarHardwareImpressora() throws IOException {
         return ResponseEntity.status(HttpStatus.OK).body(elypsoService.ligarOuReinicializarHardwareImpressora());
     }
 
     @GetMapping("/status")
-    public ResponseEntity<String> verificarStatus() throws IOException {
+    public ResponseEntity<ElypsoResponse> verificarStatus() throws IOException {
         return ResponseEntity.status(HttpStatus.OK).body(elypsoService.verificarStatus());
     }
 
     @GetMapping("/reinicializarComunicacao")
-    public ResponseEntity<String> reinicializarComunicacoesComAImpressora() throws IOException {
+    public ResponseEntity<ElypsoResponse> reinicializarComunicacoesComAImpressora() throws IOException {
         return ResponseEntity.status(HttpStatus.OK).body(elypsoService.reinicializarComunicacoesComAImpressora());
     }
 }
