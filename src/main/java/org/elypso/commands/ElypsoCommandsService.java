@@ -186,4 +186,36 @@ public class ElypsoCommandsService {
                 " }\n" +
                 "}\n";
     }
+
+    public String gerarComandoVerificarFita(int opcao) {
+
+        String comando1 = "Rkt;type;";
+        String comando2 = "Rkt;label;";
+
+        if (opcao == 1) {
+            return "{\n" +
+                    "\t\"jsonrpc\":\"2.0\",\n" +
+                    "\t\"id\":\"1\",\n" +
+                    "\t\"method\":\"CMD.SendCommand\",\n" +
+                    "\t\"params\":\n" +
+                    "\t{\n" +
+                    "\t\t\"command\":\"" + comando1 + "\",\n" +
+                    "\t\t\"device\":\"" + impressora + "\", \n" +
+                    "\t\t\"timeout\":\"" + timeout + "\"\n" +
+                    "\t}\n" +
+                    "}";
+        } else {
+            return "{\n" +
+                    "\t\"jsonrpc\":\"2.0\",\n" +
+                    "\t\"id\":\"1\",\n" +
+                    "\t\"method\":\"CMD.SendCommand\",\n" +
+                    "\t\"params\":\n" +
+                    "\t{\n" +
+                    "\t\t\"command\":\"" + comando2 + "\",\n" +
+                    "\t\t\"device\":\"" + impressora + "\", \n" +
+                    "\t\t\"timeout\":\"" + timeout + "\"\n" +
+                    "\t}\n" +
+                    "}";
+        }
+    }
 }

@@ -153,6 +153,12 @@ public class ElypsoService {
         return pegarResposta(socket, request);
     }
 
+    public PrinterCenterResponse verificarFita() throws IOException {
+        Socket socket = socketService.iniciarSocket();
+        String request = elypsoCommandsService.gerarComandoVerificarFita(2);
+        return pegarResposta(socket, request);
+    }
+
     public String converterBMPImageParaString(String filePath) throws IOException {
         // Caminho para o arquivo BMP
         //String filePath = "imagens/safeline.bmp";

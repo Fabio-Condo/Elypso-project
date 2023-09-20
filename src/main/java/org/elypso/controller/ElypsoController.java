@@ -81,4 +81,9 @@ public class ElypsoController {
     public ResponseEntity<PrinterCenterResponse> reinicializarComunicacoesComAImpressora() throws IOException {
         return ResponseEntity.status(HttpStatus.OK).body(elypsoService.reinicializarComunicacoesComAImpressora());
     }
+
+    @GetMapping("/verificarFita")
+    public ResponseEntity<PrinterCenterResponse> verificarFita() throws IOException {
+        return ResponseEntity.status(HttpStatus.OK).body(elypsoService.verificarFita());
+    }
 }
