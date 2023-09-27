@@ -52,8 +52,8 @@ public class ElypsoService {
                 printerCenterResponse = configurarProcessoImpressao();
             } else if (i == DEFINIR_BITMAP_FRONTAL) {
                 printerCenterResponse = definirBitmapImpressaoFrontal(pedido);
-            } else if (i == DEFINIR_BITMAP_TRAZEIRO) {
-                printerCenterResponse = definirBitmapImpressaoTrazeiro();
+            //} else if (i == DEFINIR_BITMAP_TRAZEIRO) {
+            //    printerCenterResponse = definirBitmapImpressaoTrazeiro();
             } else if (i == REALIZAR_IMPRESSAO) {
                 printerCenterResponse = realizarImpressao();
             } else if (i == FINALIZAR_IMPRESSAO) {
@@ -95,7 +95,9 @@ public class ElypsoService {
     public PrinterCenterResponse definirBitmapImpressaoFrontal(Pedido pedido) throws IOException, NomeOuNumeroVazioException {
         Socket socket = socketService.iniciarSocket();
 
-        String imagePath = "imagens/cartao_de_saude_test_print_front.bmp";
+        //String imagePath = "imagens/cartao_de_saude_test_print_front.bmp";
+        //String imagePath = "imagens/safeline-front.bmp";
+        String imagePath = "imagens/front2.bmp";
         String outputImagePath = "imagem_com_nome.bmp";
 
         try {
@@ -111,7 +113,7 @@ public class ElypsoService {
 
     public PrinterCenterResponse definirBitmapImpressaoTrazeiro() throws IOException {
         Socket socket = socketService.iniciarSocket();
-        String filePath = "imagens/cartao_de_saude_test_print_back.bmp";
+        String filePath = "imagens/safeline-back.bmp";
         String imagemEmDadosBase64 = converterBMPImageParaString(filePath);
         String request = elypsoCommandsService.gerarComandoDefinirBitmapImpressaoTrazeiro(imagemEmDadosBase64);
         return pegarResposta(socket, request);

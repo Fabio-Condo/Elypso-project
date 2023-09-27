@@ -8,9 +8,10 @@ import static org.elypso.constatnt.TipoFita.*;
 public class ElypsoCommandsService {
 
     String impressora = "Evolis Elypso";
+    //String impressora = "Evolis Primacy";
     String timeout = "5000";
-    String fitaSelecionada = FITA_PRETA_COM_OVERLAY;
-    //String fitaSelecionada = FITA_COLORIDA; // Colorida
+    //String fitaSelecionada = FITA_PRETA_COM_OVERLAY;
+    String fitaSelecionada = FITA_COLORIDA; // Colorida
     String sessao = "JOB000001";
 
     public String gerarComandoIniciarSequencia() {
@@ -51,13 +52,17 @@ public class ElypsoCommandsService {
                 "\t\"method\":\"PRINT.Set\",\n" +
                 "\t\"params\":\n" +
                 "\t{\n" +
-                //"\t\t\"data\":\"GRibbonType=" + fitaSelecionada + ";Duplex=NONE;Resolution=DPI600300\",\n" +
-                "\t\t\"data\":\"FColorBrightness=VAL12;GRibbonType=" + fitaSelecionada + ";Duplex=NONE;Resolution=DPI600300\",\n" +
+                "\t\t\"data\":\"FColorBrightness=VAL20;FColorContrast=VAL20;GRibbonType=" + fitaSelecionada + ";Duplex=NONE;Resolution=DPI600300\",\n" +
+                //"\t\t\"data\":\"FColorBrightness=VAL12;GRibbonType=" + fitaSelecionada + ";Duplex=NONE;Resolution=DPI600300\",\n" +
+                //"\t\t\"data\":\"FColorBrightness=VAL12;GRibbonType=" + fitaSelecionada + ";Duplex=NONE;Resolution=DPI1200\",\n" +
+                //"\t\t\"data\":\"GRibbonType=" + fitaSelecionada + ";Duplex=HORIZONTAL;GDuplexType=DUPLEX_CC;Resolution=DPI600300\",\n" +
+                //"\t\t\"data\":\"GRibbonType=" + fitaSelecionada + ";Duplex=NONE;GDuplexType=DUPLEX_MM;Resolution=DPI600300\",\n" +
                 "\t\t\"timeout\":\"" + timeout + "\",\n" +
                 "\t\t\"session\":\"" + sessao + "\"\n" +
                 "\t}\n" +
                 "}";
 
+                // Duplex funciona no Primacy
                 // Duplex=HORIZONTAL -> Nao aceita
 
     }
@@ -75,10 +80,34 @@ public class ElypsoCommandsService {
                 "\t\t\"session\":\"" + sessao + "\",\n" +
                 "\t\t\"timeout\":\"" + timeout + "\",\n" +
                 "                \"face\":\"front\",\n" +
-                "                \"panel\":\"resin\",\n" +
+                "                \"panel\":\"color\",\n" +
                 "                \"data\":\"" + dadosBase64 + "\"\n" +
                 "    }\n" +
                 "}";
+
+        /*
+        return "{\n" +
+                "\t\"jsonrpc\": \"2.0\",\n" +
+                "\t\"id\": \"1\",\n" +
+                "\t\"method\": \"PRINT.SetBitmap\",\n" +
+                "\t\"params\": [\n" +
+                "\t\t{\n" +
+                "\t\t\t\"session\": \"" + sessao + "\",\n" +
+                "\t\t\t\"timeout\": \"" + timeout + "\",\n" +
+                "\t\t\t\"face\": \"front\",\n" +
+                "\t\t\t\"panel\": \"resin\",\n" +
+                "\t\t\t\"data\": \"" + dadosBase64 + "\"\n" +
+                "\t\t},\n" +
+                "\t\t{\n" +
+                "\t\t\t\"session\": \"" + sessao + "\",\n" +
+                "\t\t\t\"timeout\": \"" + timeout + "\",\n" +
+                "\t\t\t\"face\": \"back\",\n" +
+                "\t\t\t\"panel\": \"resin\",\n" +
+                "\t\t\t\"data\": \"" + dadosBase64 + "\"\n" +
+                "\t\t}\n" +
+                "\t]\n" +
+                "}";
+         */
 
     }
 
