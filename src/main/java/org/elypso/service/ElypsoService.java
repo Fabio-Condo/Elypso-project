@@ -1,9 +1,10 @@
 package org.elypso.service;
 
 import com.google.gson.Gson;
-import org.elypso.commands.ElypsoCommandsService;
+import org.elypso.commandsService.ElypsoCommandsService;
 import org.elypso.domain.PrinterCenterResponse;
 import org.elypso.domain.Pedido;
+import org.elypso.exception.domain.FileNotFoundException;
 import org.elypso.exception.domain.NomeOuNumeroVazioException;
 import org.elypso.exception.domain.PedidoComandoException;
 import org.slf4j.Logger;
@@ -21,15 +22,17 @@ import java.nio.file.Paths;
 import java.util.Base64;
 
 import static org.elypso.constatnt.ComandosElypsoPrimacy.*;
+import static org.elypso.constatnt.Constant.*;
 
 
 @Service
 public class ElypsoService {
 
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
-
-    ElypsoCommandsService elypsoCommandsService; // aaa
-
+    String frontImagePath = IMAGES_FOLDER + FORWARD_SLASH + IMAGEM_FRONTAL_SEM_NOME;
+    String backImagePath = IMAGES_FOLDER + FORWARD_SLASH + IMAGEM_TRAZEIRA;
+    String outputImagePath = IMAGES_FOLDER + FORWARD_SLASH + IMAGEM_FRONTA_GERADA_COM_DADOS;
+    ElypsoCommandsService elypsoCommandsService;
     SocketService socketService;
 
     @Autowired
@@ -38,7 +41,7 @@ public class ElypsoService {
         this.socketService = socketService;
     }
 
-    public Pedido executarOperacaoUnica(Pedido pedido) throws IOException, PedidoComandoException, NomeOuNumeroVazioException {
+    public Pedido executarOperacaoUnica(Pedido pedido) throws IOException, PedidoComandoException, NomeOuNumeroVazioException, FileNotFoundException {
 
         PrinterCenterResponse printerCenterResponse;
 
@@ -52,8 +55,8 @@ public class ElypsoService {
                 printerCenterResponse = configurarProcessoImpressao();
             } else if (i == DEFINIR_BITMAP_FRONTAL) {
                 printerCenterResponse = definirBitmapImpressaoFrontal(pedido);
-            //} else if (i == DEFINIR_BITMAP_TRAZEIRO) {
-            //    printerCenterResponse = definirBitmapImpressaoTrazeiro();
+            } else if (i == DEFINIR_BITMAP_TRAZEIRO) {
+                printerCenterResponse = definirBitmapImpressaoTrazeiro();
             } else if (i == REALIZAR_IMPRESSAO) {
                 printerCenterResponse = realizarImpressao();
             } else if (i == FINALIZAR_IMPRESSAO) {
@@ -92,29 +95,20 @@ public class ElypsoService {
         return pegarResposta(socket, request);
     }
 
-    public PrinterCenterResponse definirBitmapImpressaoFrontal(Pedido pedido) throws IOException, NomeOuNumeroVazioException {
+    public PrinterCenterResponse definirBitmapImpressaoFrontal(Pedido pedido) throws NomeOuNumeroVazioException, IOException, FileNotFoundException {
         Socket socket = socketService.iniciarSocket();
-
-        //String imagePath = "imagens/cartao_de_saude_test_print_front.bmp";
-        //String imagePath = "imagens/safeline-front.bmp";
-        String imagePath = "imagens/front2.bmp";
-        String outputImagePath = "imagem_com_nome.bmp";
-
-        try {
-            adicionarNomeNumeroNaImagem(imagePath, outputImagePath, pedido);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        verificarExistenciaArquivoNoDiretorio(IMAGES_FOLDER, IMAGEM_FRONTAL_SEM_NOME);
+        adicionarNomeNumeroNaImagem(frontImagePath, outputImagePath, pedido);
         String imagemEmDadosBase64 = converterBMPImageParaString(outputImagePath);
+        verificarExistenciaArquivoNoDiretorio(IMAGES_FOLDER, IMAGEM_FRONTA_GERADA_COM_DADOS); // Depois de gerar a imagem frontal com dados (nome e numero), verifica se existe para impressao
         String request = elypsoCommandsService.gerarComandoDefinirBitmapImpressaoFrontal(imagemEmDadosBase64);
         return pegarResposta(socket, request);
     }
 
-    public PrinterCenterResponse definirBitmapImpressaoTrazeiro() throws IOException {
+    public PrinterCenterResponse definirBitmapImpressaoTrazeiro() throws IOException, FileNotFoundException {
         Socket socket = socketService.iniciarSocket();
-        String filePath = "imagens/safeline-back.bmp";
-        String imagemEmDadosBase64 = converterBMPImageParaString(filePath);
+        verificarExistenciaArquivoNoDiretorio(IMAGES_FOLDER, IMAGEM_TRAZEIRA);
+        String imagemEmDadosBase64 = converterBMPImageParaString(backImagePath);
         String request = elypsoCommandsService.gerarComandoDefinirBitmapImpressaoTrazeiro(imagemEmDadosBase64);
         return pegarResposta(socket, request);
     }
@@ -159,6 +153,13 @@ public class ElypsoService {
         Socket socket = socketService.iniciarSocket();
         String request = elypsoCommandsService.gerarComandoVerificarFita(2);
         return pegarResposta(socket, request);
+    }
+
+    public void verificarExistenciaArquivoNoDiretorio(String diretorio, String nomeArquivo) throws FileNotFoundException {
+        File arquivo = new File(diretorio, nomeArquivo);
+        if (!arquivo.exists()) {
+            throw new FileNotFoundException("A imagem " + nomeArquivo + " não existe no diretório " + diretorio);
+        }
     }
 
     public String converterBMPImageParaString(String filePath) throws IOException {
@@ -225,7 +226,7 @@ public class ElypsoService {
         return printerCenterResponse;
     }
 
-    public void adicionarNomeNumeroNaImagem(String imagePath, String outputImagePath, Pedido pedido) throws IOException, NomeOuNumeroVazioException {
+    public void adicionarNomeNumeroNaImagem(String imagePath, String outputImagePath, Pedido pedido) throws NomeOuNumeroVazioException, IOException {
 
         if(pedido.getNome().equals("") || pedido.getNumero().equals("")){
             LOGGER.error("O nome ou número está vázio");
@@ -238,29 +239,52 @@ public class ElypsoService {
 
         // Cria um objeto Graphics2D para desenhar na imagem (Neste caso, crio 2 objectos, nome e numero)
         Graphics2D g2d_nome = imagem.createGraphics();
+        Graphics2D g2d_numeroClientText = imagem.createGraphics();
+        Graphics2D g2d_numeroClientTextBold = imagem.createGraphics();
         Graphics2D g2d_numero = imagem.createGraphics();
 
         // Configura a fonte e a cor do texto
-        Font fonteNome = new Font("Arial", Font.BOLD, 50);
+        Font fonteNome = new Font("Agency FB", Font.BOLD, 260);
         g2d_nome.setFont(fonteNome);
         g2d_nome.setColor(Color.WHITE);
 
-        Font fonteNumero = new Font("Arial", Font.PLAIN, 30);
+        Font numeroClientText = new Font("Arial", Font.PLAIN, 120);
+        g2d_numeroClientText.setFont(numeroClientText);
+        g2d_numeroClientText.setColor(Color.WHITE);
+
+        Font numeroClientTextBold = new Font("Arial", Font.BOLD, 120);
+        g2d_numeroClientTextBold.setFont(numeroClientTextBold);
+        g2d_numeroClientTextBold.setColor(Color.WHITE);
+
+        Font fonteNumero = new Font("Arial", Font.PLAIN, 120);
         g2d_numero.setFont(fonteNumero);
         g2d_numero.setColor(Color.WHITE);
 
         // Define a posição onde o nome e o número serão adicionados (neste exemplo, no canto superior esquerdo)
-        int xNome = 70;
-        int yNome = 500;
-        int xNumero = 70;
-        int yNumero = 620;
+        //int xNome = 170;
+        //int yNome = 500;
+        //int xNumero = 170;
+        //int yNumero = 620;
+
+        int xNome = 265;
+        int yNome = 2075;
+        int xNumeroClientText = 265;
+        int yNumeroClientText = 2295;
+        int xNumeroClientTextBold = 410;
+        int yNumeroClientTextBold = 2295;
+        int xNumero = 265;
+        int yNumero = 2480;
 
         // Desenha o nome e o número na imagem
         g2d_nome.drawString(pedido.getNome(), xNome, yNome);
+        g2d_numeroClientText.drawString("nº", xNumeroClientText, yNumeroClientText);
+        g2d_numeroClientTextBold.drawString("cliente:", xNumeroClientTextBold, yNumeroClientTextBold);
         g2d_numero.drawString(pedido.getNumero(), xNumero, yNumero);
 
         // Libera os recursos do objeto Graphics2D
         g2d_nome.dispose();
+        g2d_numeroClientText.dispose();
+        g2d_numeroClientTextBold.dispose();
         g2d_numero.dispose();
 
         // Salva a imagem resultante

@@ -2,6 +2,7 @@ package org.elypso.controller;
 
 import org.elypso.domain.PrinterCenterResponse;
 import org.elypso.domain.Pedido;
+import org.elypso.exception.domain.FileNotFoundException;
 import org.elypso.exception.domain.NomeOuNumeroVazioException;
 import org.elypso.exception.domain.PedidoComandoException;
 import org.elypso.service.ElypsoService;
@@ -22,7 +23,7 @@ public class ElypsoController {
     }
 
     @PostMapping("/executarOperacaoUnica")
-    public ResponseEntity<Pedido> executarOperacaoUnica(@RequestBody Pedido pedido) throws IOException, PedidoComandoException, NomeOuNumeroVazioException {
+    public ResponseEntity<Pedido> executarOperacaoUnica(@RequestBody Pedido pedido) throws IOException, PedidoComandoException, NomeOuNumeroVazioException, FileNotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(elypsoService.executarOperacaoUnica(pedido));
     }
 
@@ -42,13 +43,13 @@ public class ElypsoController {
     }
 
     @GetMapping("/definirBitmapImpressaoFrontal")
-    public ResponseEntity<PrinterCenterResponse> definirBitmapImpressaoFrontal() throws IOException, NomeOuNumeroVazioException {
+    public ResponseEntity<PrinterCenterResponse> definirBitmapImpressaoFrontal() throws IOException, NomeOuNumeroVazioException, FileNotFoundException {
         Pedido pedido = new Pedido("NOME TESTE", "NUMERO TESTE");
         return ResponseEntity.status(HttpStatus.OK).body(elypsoService.definirBitmapImpressaoFrontal(pedido));
     }
 
     @GetMapping("/definirBitmapImpressaoTrazeiro")
-    public ResponseEntity<PrinterCenterResponse> definirBitmapImpressaoTrazeiro() throws IOException {
+    public ResponseEntity<PrinterCenterResponse> definirBitmapImpressaoTrazeiro() throws IOException, FileNotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(elypsoService.definirBitmapImpressaoTrazeiro());
     }
 
