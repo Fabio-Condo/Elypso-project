@@ -28,7 +28,7 @@ public class ElypsoService {
 
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
-    ElypsoCommandsService elypsoCommandsService;
+    ElypsoCommandsService elypsoCommandsService; // aaa
 
     SocketService socketService;
 
