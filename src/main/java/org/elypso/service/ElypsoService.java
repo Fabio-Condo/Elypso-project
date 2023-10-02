@@ -65,16 +65,31 @@ public class ElypsoService {
                 printerCenterResponse = finalizarSequencia();  // I = FINALIZAR_SEQUENCIA
             }
 
-            if(printerCenterResponse.getError() != null){
-                LOGGER.error("Erro na operação " + i);
-                LOGGER.error("Codigo do erro (Printer Center): " + printerCenterResponse.getError().getCode());
-                LOGGER.error("Mensagem do erro (Printer Center): " + printerCenterResponse.getError().getMessage());
-                throw new PedidoComandoException("Erro na operação " + i + ". Mensagem do printer center: " + printerCenterResponse.getError().getMessage()); // Vai lancar a Excepption e fazer um break
-            }
+            analisarErroOuRespostaRetornadaPeloPrinterCenter(printerCenterResponse, i);
 
         }
 
         return pedido;
+    }
+
+    public void analisarErroOuRespostaRetornadaPeloPrinterCenter(PrinterCenterResponse printerCenterResponse, int indiceComando) throws PedidoComandoException, IOException {
+
+        if(printerCenterResponse.getError() != null){
+
+            LOGGER.error("Erro na operação " + indiceComando);
+            LOGGER.error("Codigo do erro (Printer Center): " + printerCenterResponse.getError().getCode());
+            LOGGER.error("Mensagem do erro (Printer Center): " + printerCenterResponse.getError().getMessage());
+
+            if(printerCenterResponse.getError().getMessage().contains("Communication session already reserved")){
+                finalizarImpressao();
+                finalizarSequencia();
+                ligarOuReinicializarHardwareImpressora();
+                reinicializarComunicacoesComAImpressora();
+                throw new PedidoComandoException("Communication session already reserved");
+            }
+
+            throw new PedidoComandoException("Erro na operação " + indiceComando + ". Mensagem do printer center: " + printerCenterResponse.getError().getMessage()); // Vai lancar a Excepption e fazer um break
+        }
     }
 
     public PrinterCenterResponse iniciarSequencia() throws IOException {
@@ -131,27 +146,27 @@ public class ElypsoService {
         return pegarResposta(socket, request);
     }
 
-    public PrinterCenterResponse ligarOuReinicializarHardwareImpressora() throws IOException {
-        Socket socket = socketService.iniciarSocket();
-        String request = elypsoCommandsService.gerarComandosLigarOuReinicializarHardwareImpressora();
-        return pegarResposta(socket, request);
-    }
-
     public PrinterCenterResponse verificarStatus() throws IOException {
         Socket socket = socketService.iniciarSocket();
         String request = elypsoCommandsService.gerarComandoVerificarStatusImpressora();
         return pegarResposta(socket, request);
     }
 
-    public PrinterCenterResponse reinicializarComunicacoesComAImpressora() throws IOException {
-        Socket socket = socketService.iniciarSocket();
-        String request = elypsoCommandsService.gerarComandoReinicializarComunicacoesComAImpressora();
-        return pegarResposta(socket, request);
-    }
-
     public PrinterCenterResponse verificarFita() throws IOException {
         Socket socket = socketService.iniciarSocket();
         String request = elypsoCommandsService.gerarComandoVerificarFita(2);
+        return pegarResposta(socket, request);
+    }
+
+    public PrinterCenterResponse ligarOuReinicializarHardwareImpressora() throws IOException {
+        Socket socket = socketService.iniciarSocket();
+        String request = elypsoCommandsService.gerarComandosLigarOuReinicializarHardwareImpressora();
+        return pegarResposta(socket, request);
+    }
+
+    public PrinterCenterResponse reinicializarComunicacoesComAImpressora() throws IOException {
+        Socket socket = socketService.iniciarSocket();
+        String request = elypsoCommandsService.gerarComandoReinicializarComunicacoesComAImpressora();
         return pegarResposta(socket, request);
     }
 
@@ -228,9 +243,9 @@ public class ElypsoService {
 
     public void adicionarNomeNumeroNaImagem(String imagePath, String outputImagePath, Pedido pedido) throws NomeOuNumeroVazioException, IOException {
 
-        if(pedido.getNome().equals("") || pedido.getNumero().equals("")){
+        if(pedido.getNome().equals("") || pedido.getNumero().equals("") || pedido.getNome() == null || pedido.getNumero() == null){
             LOGGER.error("O nome ou número está vázio");
-            throw new NomeOuNumeroVazioException("O nome ou número está vázio");
+            throw new NomeOuNumeroVazioException("O nome ou número está vázio ou nullo");
         }
 
         // Carrega a imagem original

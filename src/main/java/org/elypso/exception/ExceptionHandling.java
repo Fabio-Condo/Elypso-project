@@ -1,6 +1,7 @@
 package org.elypso.exception;
 
 import org.elypso.domain.HttpResponse;
+import org.elypso.exception.domain.CommunicationSessionAlreadyReservedException;
 import org.elypso.exception.domain.FileNotFoundException;
 import org.elypso.exception.domain.NomeOuNumeroVazioException;
 import org.elypso.exception.domain.PedidoComandoException;
@@ -37,6 +38,11 @@ public class ExceptionHandling implements ErrorController {
 
     @ExceptionHandler(NomeOuNumeroVazioException.class)
     public ResponseEntity<HttpResponse> nomeOuNumeroVazioException(NomeOuNumeroVazioException exception) {
+        return createHttpResponse(BAD_REQUEST, exception.getMessage());
+    }
+
+    @ExceptionHandler(CommunicationSessionAlreadyReservedException.class)
+    public ResponseEntity<HttpResponse> communicationSessionAlreadyReservedException(CommunicationSessionAlreadyReservedException exception) {
         return createHttpResponse(BAD_REQUEST, exception.getMessage());
     }
 
