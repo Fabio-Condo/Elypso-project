@@ -1,5 +1,6 @@
 package org.elypso.commandsService;
 
+import org.elypso.ebumerations.Fita;
 import org.springframework.stereotype.Service;
 
 import static org.elypso.constatnt.TipoFita.*;
@@ -10,7 +11,7 @@ public class ElypsoCommandsService {
     String impressora = "Evolis Elypso";
     //String impressora = "Evolis Primacy";
     String timeout = "5000";
-    String fitaSelecionada = FITA_PRETA_COM_OVERLAY;
+    //String fitaSelecionada = FITA_PRETA_COM_OVERLAY;
     //String fitaSelecionada = FITA_COLORIDA; // Colorida
     String sessao = "JOB000001";
 
@@ -44,7 +45,7 @@ public class ElypsoCommandsService {
                 "}\n";
     }
 
-    public String gerarComandoConfigurarProcessoImpressao() {
+    public String gerarComandoConfigurarProcessoImpressao(Fita fitaSelecionada) {
 
         return "{\n" +
                 "\t\"jsonrpc\":\"2.0\",\n" +

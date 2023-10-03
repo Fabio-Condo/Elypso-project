@@ -39,12 +39,12 @@ public class ElypsoController {
 
     @GetMapping("/configurarProcessoImpressao")
     public ResponseEntity<PrinterCenterResponse> configurarProcessoImpressao() throws IOException {
-        return ResponseEntity.status(HttpStatus.OK).body(elypsoService.configurarProcessoImpressao());
+        return ResponseEntity.status(HttpStatus.OK).body(elypsoService.configurarProcessoImpressao(null));
     }
 
     @GetMapping("/definirBitmapImpressaoFrontal")
     public ResponseEntity<PrinterCenterResponse> definirBitmapImpressaoFrontal() throws IOException, NomeOuNumeroVazioException, FileNotFoundException {
-        Pedido pedido = new Pedido("NOME TESTE", "NUMERO TESTE");
+        Pedido pedido = new Pedido("NOME TESTE", "NUMERO TESTE", null);
         return ResponseEntity.status(HttpStatus.OK).body(elypsoService.definirBitmapImpressaoFrontal(pedido));
     }
 

@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import org.elypso.commandsService.ElypsoCommandsService;
 import org.elypso.domain.PrinterCenterResponse;
 import org.elypso.domain.Pedido;
+import org.elypso.ebumerations.Fita;
 import org.elypso.exception.domain.FileNotFoundException;
 import org.elypso.exception.domain.NomeOuNumeroVazioException;
 import org.elypso.exception.domain.PedidoComandoException;
@@ -52,7 +53,7 @@ public class ElypsoService {
             } else if (i == INICIALIZAR_PROCESSO_IMPRESSAO) {
                 printerCenterResponse = inicializarProcessoImpressao();
             } else if (i == CONFIGURAR_PROCESSO_IMPRESSAO) {
-                printerCenterResponse = configurarProcessoImpressao();
+                printerCenterResponse = configurarProcessoImpressao(pedido.getFita());
             } else if (i == DEFINIR_BITMAP_FRONTAL) {
                 printerCenterResponse = definirBitmapImpressaoFrontal(pedido);
             } else if (i == DEFINIR_BITMAP_TRAZEIRO) {
@@ -104,9 +105,9 @@ public class ElypsoService {
         return pegarResposta(socket, request);
     }
 
-    public PrinterCenterResponse configurarProcessoImpressao() throws IOException {
+    public PrinterCenterResponse configurarProcessoImpressao(Fita fita) throws IOException {
         Socket socket = socketService.iniciarSocket();
-        String request = elypsoCommandsService.gerarComandoConfigurarProcessoImpressao();
+        String request = elypsoCommandsService.gerarComandoConfigurarProcessoImpressao(fita);
         return pegarResposta(socket, request);
     }
 

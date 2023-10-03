@@ -1,6 +1,7 @@
 package org.elypso;
 
 import org.elypso.domain.Pedido;
+import org.elypso.ebumerations.Fita;
 import org.elypso.exception.domain.FileNotFoundException;
 import org.elypso.exception.domain.NomeOuNumeroVazioException;
 import org.springframework.boot.SpringApplication;
@@ -34,7 +35,7 @@ public class Main {
 
     public static void adicionarNomeNumeroNaImagem() throws IOException, NomeOuNumeroVazioException, FileNotFoundException {
 
-        Pedido pedido = new Pedido("FABIO CONDO", "MSSSC 23006016 - 01");
+        Pedido pedido = new Pedido("FABIO CONDO", "MSSSC 23006016 - 01", null);
 
         String imagePath = IMAGES_FOLDER + FORWARD_SLASH + IMAGEM_FRONTAL_SEM_NOME;
         String outputImagePath = IMAGES_FOLDER + FORWARD_SLASH + IMAGEM_FRONTA_GERADA_COM_DADOS;
