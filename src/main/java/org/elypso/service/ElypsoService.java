@@ -32,7 +32,7 @@ public class ElypsoService {
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
     String frontImagePath = IMAGES_FOLDER + FORWARD_SLASH + IMAGEM_FRONTAL_SEM_NOME;
     String backImagePath = IMAGES_FOLDER + FORWARD_SLASH + IMAGEM_TRAZEIRA;
-    String outputImagePath = IMAGES_FOLDER + FORWARD_SLASH + IMAGEM_FRONTA_GERADA_COM_DADOS;
+    String outputImagePath = IMAGES_FOLDER + FORWARD_SLASH + IMAGEM_FRONTAL_GERADA_COM_DADOS;
     ElypsoCommandsService elypsoCommandsService;
     SocketService socketService;
 
@@ -116,7 +116,7 @@ public class ElypsoService {
         verificarExistenciaArquivoNoDiretorio(IMAGES_FOLDER, IMAGEM_FRONTAL_SEM_NOME);
         adicionarNomeNumeroNaImagem(frontImagePath, outputImagePath, pedido);
         String imagemEmDadosBase64 = converterBMPImageParaString(outputImagePath);
-        verificarExistenciaArquivoNoDiretorio(IMAGES_FOLDER, IMAGEM_FRONTA_GERADA_COM_DADOS); // Depois de gerar a imagem frontal com dados (nome e numero), verifica se existe para impressao
+        verificarExistenciaArquivoNoDiretorio(IMAGES_FOLDER, IMAGEM_FRONTAL_GERADA_COM_DADOS); // Depois de gerar a imagem frontal com dados (nome e numero), verifica se existe para impressao
         String request = elypsoCommandsService.gerarComandoDefinirBitmapImpressaoFrontal(imagemEmDadosBase64);
         return pegarResposta(socket, request);
     }

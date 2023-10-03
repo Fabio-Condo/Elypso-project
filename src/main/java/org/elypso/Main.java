@@ -37,7 +37,7 @@ public class Main {
         Pedido pedido = new Pedido("FABIO CONDO", "MSSSC 23006016 - 01", null);
 
         String imagePath = IMAGES_FOLDER + FORWARD_SLASH + IMAGEM_FRONTAL_SEM_NOME;
-        String outputImagePath = IMAGES_FOLDER + FORWARD_SLASH + IMAGEM_FRONTA_GERADA_COM_DADOS;
+        String outputImagePath = IMAGES_FOLDER + FORWARD_SLASH + IMAGEM_FRONTAL_GERADA_COM_DADOS;
 
         if(pedido.getNome().equals("") || pedido.getNumero().equals("")){
             //LOGGER.error("O nome ou número está vázio");
