@@ -6,7 +6,6 @@ public class Pedido {
 
     private String nome;
     private String numero;
-
     private Fita fita;
 
     public Pedido() {
