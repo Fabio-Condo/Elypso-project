@@ -1,9 +1,7 @@
 package org.elypso.commandsService;
 
-import org.elypso.ebumerations.Fita;
+import org.elypso.enumerations.Fita;
 import org.springframework.stereotype.Service;
-
-import static org.elypso.constatnt.TipoFita.*;
 
 @Service
 public class ElypsoCommandsService {
@@ -11,8 +9,8 @@ public class ElypsoCommandsService {
     String impressora = "Evolis Elypso";
     //String impressora = "Evolis Primacy";
     String timeout = "5000";
-    //String fitaSelecionada = FITA_PRETA_COM_OVERLAY;
-    //String fitaSelecionada = FITA_COLORIDA; // Colorida
+    //String fitaSelecionada = "RM_KO";
+    //String fitaSelecionada = "RC_YMCKO"; // Colorida
     String sessao = "JOB000001";
 
     public String gerarComandoIniciarSequencia() {

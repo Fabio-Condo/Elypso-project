@@ -1,7 +1,6 @@
 package org.elypso;
 
 import org.elypso.domain.Pedido;
-import org.elypso.ebumerations.Fita;
 import org.elypso.exception.domain.FileNotFoundException;
 import org.elypso.exception.domain.NomeOuNumeroVazioException;
 import org.springframework.boot.SpringApplication;

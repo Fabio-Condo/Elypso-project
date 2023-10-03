@@ -1,6 +1,7 @@
-package org.elypso.ebumerations;
+package org.elypso.enumerations;
 
 public enum Fita {
+
     RC_YMCKO("Color YMCKO"),
     RM_KO("Monochrome KO"),
     RM_KBLACK("Monochrome Black"),

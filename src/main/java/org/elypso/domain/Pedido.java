@@ -1,6 +1,6 @@
 package org.elypso.domain;
 
-import org.elypso.ebumerations.Fita;
+import org.elypso.enumerations.Fita;
 
 public class Pedido {
 

@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import org.elypso.commandsService.ElypsoCommandsService;
 import org.elypso.domain.PrinterCenterResponse;
 import org.elypso.domain.Pedido;
-import org.elypso.ebumerations.Fita;
+import org.elypso.enumerations.Fita;
 import org.elypso.exception.domain.FileNotFoundException;
 import org.elypso.exception.domain.NomeOuNumeroVazioException;
 import org.elypso.exception.domain.PedidoComandoException;
