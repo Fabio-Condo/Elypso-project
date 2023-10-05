@@ -5,7 +5,6 @@ public class PrinterCenterResponse {
     private Long id;
     private String jsonrpc;
     private String result;
-
     private PrinterCenterErrorResponse error;
 
     public PrinterCenterResponse() {
