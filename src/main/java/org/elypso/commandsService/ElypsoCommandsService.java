@@ -253,4 +253,38 @@ public class ElypsoCommandsService {
                     "}";
         }
     }
+
+    /**
+     * Realiza a verificacao da impressora, caso haja um erro ou aviso relacionado a uma impressora especifica apos a realizacao do fluxo de impressao(Print.Begin ate Print.Print)
+     */
+    public String criarComandoGetEvent() {
+        return "{\n" +
+                " \"id\": \"1\",\n" +
+                " \"jsonrpc\": \"2.0\",\n" +
+                " \"method\": \"SUPERVISION.GetEvent\",\n" +
+                " \"params\": {\n" +
+                " \"device\": \"" + impressora + "\",\n" +
+                " \"timeout\":\"" + timeout + "\"\n" +
+                " }\n" +
+                "}";
+    }
+
+
+    /**
+     * Realiza o cancelamento do erro, caso a impressora tenha algum erro associada a mesma naquele momento, +erro ou aviso relacionados a uma impressora especifica apos a realizacao do fluxo de impressao(Print.Begin ate Print.Print)
+     */
+    public String criarComandoSetEvent(String erro) {
+        return "{\n" +
+                " \"id\": \"1\",\n" +
+                " \"jsonrpc\": \"2.0\",\n" +
+                " \"method\": \"SUPERVISION.SetEvent\",\n" +
+                " \"params\": {\n" +
+                " \"action\": \"" + erro + ":CANCEL\",\n" +
+                " \"device\": \"" + impressora + "\",\n" +
+                " \"timeout\":\"" + timeout + "\"\n" +
+                " }\n" +
+                "}";
+    }
+
+
 }

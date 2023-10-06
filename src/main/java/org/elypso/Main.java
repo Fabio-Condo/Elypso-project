@@ -30,6 +30,23 @@ public class Main {
 
         //visualizarFontesInstaladasNoSistemaOperacional();
         //adicionarNomeNumeroNaImagem();
+
+        //MinhaThread minhaThread = new MinhaThread(); // Cria uma instância da sua thread
+        //minhaThread.start(); // Inicia a thread
+    }
+
+    static class MinhaThread extends Thread {
+        public void run() {
+            // Código que será executado na thread
+            for (int i = 1; i <= 5; i++) {
+                System.out.println("Contagem: " + i);
+                try {
+                    Thread.sleep(1000); // Aguarda 1 segundo
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     public static void adicionarNomeNumeroNaImagem() throws IOException, NomeOuNumeroVazioException, FileNotFoundException {

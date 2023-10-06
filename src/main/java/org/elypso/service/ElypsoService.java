@@ -6,6 +6,7 @@ import org.elypso.domain.PrinterCenterResponse;
 import org.elypso.domain.Pedido;
 import org.elypso.enumerations.Fita;
 import org.elypso.exception.domain.FileNotFoundException;
+import org.elypso.exception.domain.ImpressoraSemFitaException;
 import org.elypso.exception.domain.NomeOuNumeroVazioException;
 import org.elypso.exception.domain.PedidoComandoException;
 import org.slf4j.Logger;
@@ -66,11 +67,42 @@ public class ElypsoService {
                 printerCenterResponse = finalizarSequencia();  // I = FINALIZAR_SEQUENCIA
             }
 
+            verificarEventoImpressoraELimparErro();
             analisarErroOuRespostaRetornadaPeloPrinterCenter(printerCenterResponse, i);
 
         }
 
         return pedido;
+    }
+
+    public void verificarEventoImpressoraELimparErro(){
+        Runnable task = () -> {
+            try {
+                Thread.sleep(3000);
+                PrinterCenterResponse printerCenterResponse = getEvent(); // Pegar o erro, caso exista
+                if(!printerCenterResponse.getResult().equals("NONE")){
+
+                    // Dividir a string pelo caractere ":"   -> // EX: DEF_NO_RIBBON:CANCEL
+                    String[] partes = printerCenterResponse.getResult().split(":"); // Dividir a resposta e pegar a primeira parte que contem o erro
+                    String erro = partes[0];
+                    String accoes = partes[1];
+
+                    setEvent(erro);
+
+                    finalizarImpressao();
+                    finalizarSequencia();
+                    ligarOuReinicializarHardwareImpressora();
+                    reinicializarComunicacoesComAImpressora();
+
+                    // Criar o metodo que vai lancar todos erros
+                    throw new ImpressoraSemFitaException(printerCenterResponse.getResult());
+                }
+            } catch (IOException | InterruptedException | ImpressoraSemFitaException e) {
+                throw new RuntimeException(e);
+            }
+        };
+        Thread thread = new Thread(task);
+        thread.start();
     }
 
     public void analisarErroOuRespostaRetornadaPeloPrinterCenter(PrinterCenterResponse printerCenterResponse, int indiceComando) throws PedidoComandoException, IOException {
@@ -156,6 +188,18 @@ public class ElypsoService {
     public PrinterCenterResponse verificarFita() throws IOException {
         Socket socket = socketService.iniciarSocket();
         String request = elypsoCommandsService.gerarComandoVerificarFita(2);
+        return pegarResposta(socket, request);
+    }
+
+    public PrinterCenterResponse getEvent() throws IOException {
+        Socket socket = socketService.iniciarSocket();
+        String request = elypsoCommandsService.criarComandoGetEvent();
+        return pegarResposta(socket, request);
+    }
+
+    public PrinterCenterResponse setEvent(String erro) throws IOException {
+        Socket socket = socketService.iniciarSocket();
+        String request = elypsoCommandsService.criarComandoSetEvent(erro);
         return pegarResposta(socket, request);
     }
 
