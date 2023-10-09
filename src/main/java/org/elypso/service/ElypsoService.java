@@ -336,10 +336,10 @@ public class ElypsoService {
         int yNumero = 2480;
 
         // Desenha o nome e o número na imagem
-        g2d_nome.drawString(pedido.getNome(), xNome, yNome);
+        g2d_nome.drawString(pedido.getNome().toUpperCase(), xNome, yNome);
         g2d_numeroClientText.drawString("nº", xNumeroClientText, yNumeroClientText);
         g2d_numeroClientTextBold.drawString("cliente:", xNumeroClientTextBold, yNumeroClientTextBold);
-        g2d_numero.drawString(pedido.getNumero(), xNumero, yNumero);
+        g2d_numero.drawString(pedido.getNumero().toUpperCase(), xNumero, yNumero);
 
         // Libera os recursos do objeto Graphics2D
         g2d_nome.dispose();
