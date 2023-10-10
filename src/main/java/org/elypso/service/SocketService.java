@@ -15,7 +15,7 @@ public class SocketService {
         try {
             String ip = "127.0.0.1";
             int port = 18000;
-            Socket socket = new Socket(ip,port);
+            Socket socket = new Socket(ip, port);
             //socket.setSoTimeout(5000);
             LOGGER.info("Evolis Printer center URL: " + ip + ":" + port + " [connected]");
             //socket.close();

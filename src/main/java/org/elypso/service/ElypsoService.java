@@ -126,93 +126,65 @@ public class ElypsoService {
     }
 
     public PrinterCenterResponse iniciarSequencia() throws IOException {
-        Socket socket = socketService.iniciarSocket();
-        String request = elypsoCommandsService.gerarComandoIniciarSequencia();
-        return pegarResposta(socket, request);
+        return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoIniciarSequencia());
     }
 
     public PrinterCenterResponse inicializarProcessoImpressao() throws IOException {
-        Socket socket = socketService.iniciarSocket();
-        String request = elypsoCommandsService.gerarComandoInicializarProcessoImpressao();
-        return pegarResposta(socket, request);
+        return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoInicializarProcessoImpressao());
     }
 
     public PrinterCenterResponse configurarProcessoImpressao(Fita fita) throws IOException {
-        Socket socket = socketService.iniciarSocket();
-        String request = elypsoCommandsService.gerarComandoConfigurarProcessoImpressao(fita);
-        return pegarResposta(socket, request);
+        return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoConfigurarProcessoImpressao(fita));
     }
 
     public PrinterCenterResponse definirBitmapImpressaoFrontal(Pedido pedido) throws NomeOuNumeroVazioException, IOException, FileNotFoundException {
-        Socket socket = socketService.iniciarSocket();
         verificarExistenciaArquivoNoDiretorio(IMAGES_FOLDER, IMAGEM_FRONTAL_SEM_NOME);
         adicionarNomeNumeroNaImagem(frontImagePath, outputImagePath, pedido);
         String imagemEmDadosBase64 = converterBMPImageParaString(outputImagePath);
         verificarExistenciaArquivoNoDiretorio(IMAGES_FOLDER, IMAGEM_FRONTAL_GERADA_COM_DADOS); // Depois de gerar a imagem frontal com dados (nome e numero), verifica se existe para impressao
-        String request = elypsoCommandsService.gerarComandoDefinirBitmapImpressaoFrontal(imagemEmDadosBase64);
-        return pegarResposta(socket, request);
+        return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoDefinirBitmapImpressaoFrontal(imagemEmDadosBase64));
     }
 
     public PrinterCenterResponse definirBitmapImpressaoTrazeiro() throws IOException, FileNotFoundException {
-        Socket socket = socketService.iniciarSocket();
         verificarExistenciaArquivoNoDiretorio(IMAGES_FOLDER, IMAGEM_TRAZEIRA);
         String imagemEmDadosBase64 = converterBMPImageParaString(backImagePath);
-        String request = elypsoCommandsService.gerarComandoDefinirBitmapImpressaoTrazeiro(imagemEmDadosBase64);
-        return pegarResposta(socket, request);
+        return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoDefinirBitmapImpressaoTrazeiro(imagemEmDadosBase64));
     }
 
     public PrinterCenterResponse realizarImpressao() throws IOException {
-        Socket socket = socketService.iniciarSocket();
-        String request = elypsoCommandsService.gerarComandoRealizarImpressao();
-        return pegarResposta(socket, request);
+        return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoRealizarImpressao());
     }
 
     public PrinterCenterResponse finalizarImpressao() throws IOException {
-        Socket socket = socketService.iniciarSocket();
-        String request = elypsoCommandsService.gerarComandoFinalizarImpressao();
-        return pegarResposta(socket, request);
+        return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoFinalizarImpressao());
     }
 
     public PrinterCenterResponse finalizarSequencia() throws IOException {
-        Socket socket = socketService.iniciarSocket();
-        String request = elypsoCommandsService.gerarComandoFinalizarSequencia();
-        return pegarResposta(socket, request);
+        return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoFinalizarSequencia());
     }
 
     public PrinterCenterResponse verificarStatus() throws IOException {
-        Socket socket = socketService.iniciarSocket();
-        String request = elypsoCommandsService.gerarComandoVerificarStatusImpressora();
-        return pegarResposta(socket, request);
+        return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoVerificarStatusImpressora());
     }
 
     public PrinterCenterResponse verificarFita() throws IOException {
-        Socket socket = socketService.iniciarSocket();
-        String request = elypsoCommandsService.gerarComandoVerificarFita(2);
-        return pegarResposta(socket, request);
+        return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoVerificarFita(2));
     }
 
     public PrinterCenterResponse getEvent() throws IOException {
-        Socket socket = socketService.iniciarSocket();
-        String request = elypsoCommandsService.criarComandoGetEvent();
-        return pegarResposta(socket, request);
+        return enviarPedidoViaSocket(elypsoCommandsService.criarComandoGetEvent());
     }
 
     public PrinterCenterResponse setEvent(String erro) throws IOException {
-        Socket socket = socketService.iniciarSocket();
-        String request = elypsoCommandsService.criarComandoSetEvent(erro);
-        return pegarResposta(socket, request);
+        return enviarPedidoViaSocket(elypsoCommandsService.criarComandoSetEvent(erro));
     }
 
     public PrinterCenterResponse ligarOuReinicializarHardwareImpressora() throws IOException {
-        Socket socket = socketService.iniciarSocket();
-        String request = elypsoCommandsService.gerarComandosLigarOuReinicializarHardwareImpressora();
-        return pegarResposta(socket, request);
+        return enviarPedidoViaSocket(elypsoCommandsService.gerarComandosLigarOuReinicializarHardwareImpressora());
     }
 
     public PrinterCenterResponse reinicializarComunicacoesComAImpressora() throws IOException {
-        Socket socket = socketService.iniciarSocket();
-        String request = elypsoCommandsService.gerarComandoReinicializarComunicacoesComAImpressora();
-        return pegarResposta(socket, request);
+        return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoReinicializarComunicacoesComAImpressora());
     }
 
     public void verificarExistenciaArquivoNoDiretorio(String diretorio, String nomeArquivo) throws FileNotFoundException {
@@ -238,7 +210,9 @@ public class ElypsoService {
         return base64EncodedImage;
     }
 
-    public PrinterCenterResponse pegarResposta(Socket socket, String request ) throws IOException {
+    public PrinterCenterResponse enviarPedidoViaSocket(String request) throws IOException {
+
+        Socket socket = socketService.iniciarSocket();
 
         char[] data = new char[1024];
 
