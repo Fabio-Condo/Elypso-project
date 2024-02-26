@@ -53,9 +53,9 @@ public class ElypsoCommandsService {
                 "\t{\n" +
 
                 //"\t\t\"data\":\"FColorBrightness=VAL20;FColorContrast=VAL20;GRibbonType=" + fitaSelecionada + ";Duplex=NONE;IGIQLACC=VAL10;IGIQLACM=VAL10;IGIQLACY=VAL10;GSmoothing=ADVSMOOTH;Resolution=DPI600300\",\n" + // Usar se a fita for RM_KO (COLORIDA). Brilho adicionado
-                "\t\t\"data\":\"GRibbonType=" + fitaSelecionada + ";Duplex=NONE;IGIQLACC=VAL10;IGIQLACM=VAL10;IGIQLACY=VAL10;GSmoothing=ADVSMOOTH;Resolution=DPI600300\",\n" + // Usar se a fita for RM_KO (COLORIDA). Brilho nao adicionado
+                //"\t\t\"data\":\"GRibbonType=" + fitaSelecionada + ";Duplex=NONE;IGIQLACC=VAL10;IGIQLACM=VAL10;IGIQLACY=VAL10;GSmoothing=ADVSMOOTH;Resolution=DPI600300\",\n" + // Usar se a fita for RM_KO (COLORIDA). Brilho nao adicionado
 
-                //"\t\t\"data\":\"FColorBrightness=VAL12;GRibbonType=" + fitaSelecionada + ";Duplex=NONE;Resolution=DPI600300\",\n" + // Se a fita for KO (PRETA)
+                "\t\t\"data\":\"FColorBrightness=VAL12;GRibbonType=" + fitaSelecionada + ";Duplex=NONE;Resolution=DPI600300\",\n" + // Se a fita for KO (PRETA)
                 //"\t\t\"data\":\"FColorBrightness=VAL12;GRibbonType=" + fitaSelecionada + ";Duplex=NONE;Resolution=DPI1200\",\n" +
 
                 //"\t\t\"data\":\"GRibbonType=" + fitaSelecionada + ";Duplex=HORIZONTAL;GDuplexType=DUPLEX_CC;Resolution=DPI600300\",\n" + // Se a impressoa for Duplex e nao SIMPLEX

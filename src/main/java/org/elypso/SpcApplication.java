@@ -136,8 +136,8 @@ public class SpcApplication {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowCredentials(true);
         //corsConfiguration.setAllowedOrigins(Collections.singletonList("https://fabio-condo.github.io"));
-        corsConfiguration.setAllowedOrigins(Collections.singletonList("http://192.168.11.44:4202"));
-        //corsConfiguration.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
+        //corsConfiguration.setAllowedOrigins(Collections.singletonList("http://192.168.11.44:4202"));
+        corsConfiguration.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
         corsConfiguration.setAllowedHeaders(Arrays.asList("Origin", "Access-Control-Allow-Origin", "Content-Type",
                 "Accept", "Jwt-Token", "Authorization", "Origin, Accept", "X-Requested-With",
                 "Access-Control-Request-Method", "Access-Control-Request-Headers"));
