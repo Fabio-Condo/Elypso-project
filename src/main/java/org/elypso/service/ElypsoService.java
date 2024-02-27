@@ -30,8 +30,8 @@ import static org.elypso.constatnt.Constant.*;
 public class ElypsoService {
 
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
-    private static final String IMAGES_PATH = "/app/imagens"; // Caminho do volume no contêiner// Use quando fizer deploymente no docker
-    //public static final String IMAGES_PATH = "C:\\Users\\user\\Desktop\\spc-imagens-docker"; // Deployment no proproprio server ou run usando um jar
+    //private static final String IMAGES_PATH = "/app/imagens"; // Caminho do volume no contêiner// Use quando fizer deploymente no docker
+    public static final String IMAGES_PATH = "C:\\Users\\user\\Desktop\\spc-imagens-docker"; // Deployment no proproprio server ou run usando um jar
 
     String frontImagePath   = IMAGES_PATH + FORWARD_SLASH + IMAGEM_FRONTAL_SEM_NOME;
     String backImagePath    = IMAGES_PATH + FORWARD_SLASH + IMAGEM_TRAZEIRA;
