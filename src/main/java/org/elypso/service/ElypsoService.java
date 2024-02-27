@@ -11,7 +11,6 @@ import org.elypso.exception.domain.NomeOuNumeroVazioException;
 import org.elypso.exception.domain.PedidoComandoException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
@@ -31,17 +30,15 @@ import static org.elypso.constatnt.Constant.*;
 public class ElypsoService {
 
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
-    private static final String CAMINHO_NO_CONTAINER = "/app/imagens"; // Caminho do volume no contêiner
-    //public static final String CAMINHO_NO_CONTAINER = "C:\\Users\\user\\Desktop\\spc-imagens-docker";
+    private static final String IMAGES_PATH = "/app/imagens"; // Caminho do volume no contêiner// Use quando fizer deploymente no dogit diffpublic static final String IMAGES_PATH = "C:\\Users\\user\\Desktop\\spc-imagens-docker"; // Deployment no proproprio server ou run usando um jar
 
-    String frontImagePath   = CAMINHO_NO_CONTAINER + FORWARD_SLASH + IMAGEM_FRONTAL_SEM_NOME;
-    String backImagePath    = CAMINHO_NO_CONTAINER + FORWARD_SLASH + IMAGEM_TRAZEIRA;
-    String outputImagePath  = CAMINHO_NO_CONTAINER + FORWARD_SLASH + IMAGEM_FRONTAL_GERADA_COM_DADOS;
+    String frontImagePath   = IMAGES_PATH + FORWARD_SLASH + IMAGEM_FRONTAL_SEM_NOME;
+    String backImagePath    = IMAGES_PATH + FORWARD_SLASH + IMAGEM_TRAZEIRA;
+    String outputImagePath  = IMAGES_PATH + FORWARD_SLASH + IMAGEM_FRONTAL_GERADA_COM_DADOS;
 
     ElypsoCommandsService elypsoCommandsService;
     SocketService socketService;
 
-    @Autowired
     public ElypsoService(ElypsoCommandsService elypsoCommandsService, SocketService socketService) {
         this.elypsoCommandsService = elypsoCommandsService;
         this.socketService = socketService;
@@ -142,15 +139,15 @@ public class ElypsoService {
     }
 
     public PrinterCenterResponse definirBitmapImpressaoFrontal(Pedido pedido) throws NomeOuNumeroVazioException, IOException, FileNotFoundException {
-        verificarExistenciaArquivoNoDiretorio(CAMINHO_NO_CONTAINER, IMAGEM_FRONTAL_SEM_NOME);
+        verificarExistenciaArquivoNoDiretorio(IMAGES_PATH, IMAGEM_FRONTAL_SEM_NOME);
         adicionarNomeNumeroNaImagem(frontImagePath, outputImagePath, pedido);
         String imagemEmDadosBase64 = converterBMPImageParaString(outputImagePath);
-        verificarExistenciaArquivoNoDiretorio(CAMINHO_NO_CONTAINER, IMAGEM_FRONTAL_GERADA_COM_DADOS); // Depois de gerar a imagem frontal com dados (nome e numero), verifica se existe para impressao
+        verificarExistenciaArquivoNoDiretorio(IMAGES_PATH, IMAGEM_FRONTAL_GERADA_COM_DADOS); // Depois de gerar a imagem frontal com dados (nome e numero), verifica se existe para impressao
         return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoDefinirBitmapImpressaoFrontal(imagemEmDadosBase64));
     }
 
     public PrinterCenterResponse definirBitmapImpressaoTrazeiro() throws IOException, FileNotFoundException {
-        verificarExistenciaArquivoNoDiretorio(CAMINHO_NO_CONTAINER, IMAGEM_TRAZEIRA);
+        verificarExistenciaArquivoNoDiretorio(IMAGES_PATH, IMAGEM_TRAZEIRA);
         String imagemEmDadosBase64 = converterBMPImageParaString(backImagePath);
         return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoDefinirBitmapImpressaoTrazeiro(imagemEmDadosBase64));
     }

@@ -1,9 +1,11 @@
 server:
   port: 8080
 
-#meu:
-  #diretorio:
-    #compartilhado: /caminho/no/container/meu_volume
+spring:
+  profiles:
+    active: dev
+
+
 
   
 

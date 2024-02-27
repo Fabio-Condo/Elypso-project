@@ -12,7 +12,6 @@ org\elypso\service\SocketService.class
 org\elypso\commandsService\ElypsoCommandsService.class
 org\elypso\constatnt\ComandosElypsoPrimacy.class
 org\elypso\domain\PrinterCenterErrorResponse.class
-org\elypso\SpcApplication$MinhaThread.class
 org\elypso\service\ElypsoService.class
 org\elypso\domain\HttpResponse.class
 org\elypso\domain\Pedido.class
