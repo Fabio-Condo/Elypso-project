@@ -13,8 +13,8 @@ public class SocketService {
 
     public Socket iniciarSocket(){
         try {
-            //String ip = "127.0.0.1";
-            String ip = "192.168.11.44";
+            String ip = "localhost";
+            //String ip = "192.168.11.44";
             int port = 18000;
             Socket socket = new Socket(ip, port);
             //socket.setSoTimeout(5000);
