@@ -44,7 +44,7 @@ public class ElypsoController {
 
     @GetMapping("/definirBitmapImpressaoFrontal")
     public ResponseEntity<PrinterCenterResponse> definirBitmapImpressaoFrontal() throws IOException, NomeOuNumeroVazioException, FileNotFoundException {
-        Pedido pedido = new Pedido("NOME TESTE", "NUMERO TESTE", null);
+        Pedido pedido = new Pedido("NOME TESTE", "NUMERO TESTE", "NUMERO CLIENTE TESTE", null);
         return ResponseEntity.status(HttpStatus.OK).body(elypsoService.definirBitmapImpressaoFrontal(pedido));
     }
 

@@ -6,14 +6,17 @@ public class Pedido {
 
     private String nome;
     private String numero;
+    private String numeroCliente;
+
     private Fita fita;
 
     public Pedido() {
     }
 
-    public Pedido(String nome, String numero, Fita fita) {
+    public Pedido(String nome, String numero, String numeroCliente, Fita fita) {
         this.nome = nome;
         this.numero = numero;
+        this.numeroCliente = numeroCliente;
         this.fita = fita;
     }
 
@@ -31,6 +34,14 @@ public class Pedido {
 
     public void setNumero(String numero) {
         this.numero = numero;
+    }
+
+    public String getNumeroCliente() {
+        return numeroCliente;
+    }
+
+    public void setNumeroCliente(String numeroCliente) {
+        this.numeroCliente = numeroCliente;
     }
 
     public Fita getFita() {

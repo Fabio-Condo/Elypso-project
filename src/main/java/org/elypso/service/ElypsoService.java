@@ -277,6 +277,7 @@ public class ElypsoService {
         Graphics2D g2d_nome = imagem.createGraphics();
         Graphics2D g2d_numeroClientText = imagem.createGraphics();
         Graphics2D g2d_numeroClientTextBold = imagem.createGraphics();
+        Graphics2D g2d_numeroClientTextValue = imagem.createGraphics();
         Graphics2D g2d_numero = imagem.createGraphics();
 
         // Configura a fonte e a cor do texto
@@ -291,6 +292,10 @@ public class ElypsoService {
         Font numeroClientTextBold = new Font("Arial", Font.BOLD, 120);
         g2d_numeroClientTextBold.setFont(numeroClientTextBold);
         g2d_numeroClientTextBold.setColor(Color.WHITE);
+
+        Font numeroClientTextValue = new Font("Arial", Font.PLAIN, 120);
+        g2d_numeroClientTextValue.setFont(numeroClientTextValue);
+        g2d_numeroClientTextValue.setColor(Color.WHITE);
 
         Font fonteNumero = new Font("Arial", Font.PLAIN, 120);
         g2d_numero.setFont(fonteNumero);
@@ -308,6 +313,8 @@ public class ElypsoService {
         int yNumeroClientText = 2295;
         int xNumeroClientTextBold = 410;
         int yNumeroClientTextBold = 2295;
+        int xNumeroClientTextValue = 850;
+        int yNumeroClientTextValue = 2295;
         int xNumero = 265;
         int yNumero = 2480;
 
@@ -315,6 +322,7 @@ public class ElypsoService {
         g2d_nome.drawString(pedido.getNome().toUpperCase(), xNome, yNome);
         g2d_numeroClientText.drawString("nº", xNumeroClientText, yNumeroClientText);
         g2d_numeroClientTextBold.drawString("cliente:", xNumeroClientTextBold, yNumeroClientTextBold);
+        g2d_numeroClientTextValue.drawString(pedido.getNumeroCliente().toUpperCase(), xNumeroClientTextValue, yNumeroClientTextValue);
         g2d_numero.drawString(pedido.getNumero().toUpperCase(), xNumero, yNumero);
 
         // Libera os recursos do objeto Graphics2D
