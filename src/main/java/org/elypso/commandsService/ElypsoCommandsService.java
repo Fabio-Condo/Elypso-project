@@ -52,6 +52,7 @@ public class ElypsoCommandsService {
                 "\t\"params\":\n" +
                 "\t{\n" +
 
+                // 1.3 SDK VERSION  "data":"GRibbonType=RC_YMCKO;Duplex=HORIZONTAL;GDuplexType=DUPLEX_CC;IGSendSpoolerSession=OFF",
                 "\t\t\"data\":\"FColorBrightness=VAL20;FColorContrast=VAL20;GRibbonType=" + fitaSelecionada + ";Duplex=NONE;IGIQLACC=VAL10;IGIQLACM=VAL10;IGIQLACY=VAL10;GSmoothing=ADVSMOOTH;Resolution=DPI600300\",\n" + // Usar se a fita for RM_KO (COLORIDA). Brilho adicionado
                 //"\t\t\"data\":\"GRibbonType=" + fitaSelecionada + ";Duplex=NONE;IGIQLACC=VAL10;IGIQLACM=VAL10;IGIQLACY=VAL10;GSmoothing=ADVSMOOTH;Resolution=DPI600300\",\n" + // Usar se a fita for RM_KO (COLORIDA). Brilho nao adicionado
 
