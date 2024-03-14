@@ -2,6 +2,7 @@ package org.elypso.controller;
 
 import org.elypso.domain.PrinterCenterResponse;
 import org.elypso.domain.Pedido;
+import org.elypso.enumerations.Fita;
 import org.elypso.exception.domain.FileNotFoundException;
 import org.elypso.exception.domain.NomeOuNumeroVazioException;
 import org.elypso.exception.domain.PedidoComandoException;
@@ -9,6 +10,7 @@ import org.elypso.service.ElypsoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -20,6 +22,15 @@ public class ElypsoController {
 
     public ElypsoController(ElypsoService elypsoService) {
         this.elypsoService = elypsoService;
+    }
+
+    @PostMapping("/bulk")
+    public ResponseEntity<String> uploadArquivoExcel(@RequestParam("file") MultipartFile file, @RequestParam("fita") Fita fita) throws IOException {
+        if (file.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("O arquivo está vazio");
+        }
+        elypsoService.imprimirDadosDoExcel(file, fita);
+        return ResponseEntity.status(HttpStatus.OK).body("Dados dos clientes impressos com sucesso!");
     }
 
     @PostMapping("/executarOperacaoUnica")

@@ -1,6 +1,10 @@
 package org.elypso.service;
 
 import com.google.gson.Gson;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.elypso.commandsService.ElypsoCommandsService;
 import org.elypso.domain.PrinterCenterResponse;
 import org.elypso.domain.Pedido;
@@ -12,6 +16,7 @@ import org.elypso.exception.domain.PedidoComandoException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -43,6 +48,38 @@ public class ElypsoService {
     public ElypsoService(ElypsoCommandsService elypsoCommandsService, SocketService socketService) {
         this.elypsoCommandsService = elypsoCommandsService;
         this.socketService = socketService;
+    }
+
+    public void imprimirDadosDoExcel(MultipartFile file, Fita fita) throws IOException {
+        try (InputStream inputStream = file.getInputStream()) {
+            Workbook workbook = new XSSFWorkbook(inputStream);
+            Sheet sheet = workbook.getSheetAt(0); // Supondo que os dados estejam na primeira planilha
+
+            int totalLinhas = sheet.getPhysicalNumberOfRows();
+            System.out.println("Total de linhas no arquivo: " + totalLinhas);
+
+            for (int i = 3; i < totalLinhas; i++) { // Começa do 1 para pular a linha de cabeçalho
+                Row row = sheet.getRow(i);
+
+                if (row == null) {
+                    continue; // Pula para a próxima linha se a linha estiver vazia
+                }
+
+                // Lendo os dados de cada coluna
+                String nomeCliente = row.getCell(1).getStringCellValue();
+                String numeroCliente = row.getCell(2).getStringCellValue();
+                String numeroApolice = row.getCell(4).getStringCellValue();
+                // Adicione mais campos conforme necessário
+
+                // Imprimindo os dados do funcionário
+                Pedido pedido= new Pedido(nomeCliente, numeroCliente, numeroApolice, fita);
+                executarOperacaoUnica(pedido);
+            }
+
+            workbook.close();
+        } catch (PedidoComandoException | FileNotFoundException | NomeOuNumeroVazioException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public Pedido executarOperacaoUnica(Pedido pedido) throws IOException, PedidoComandoException, NomeOuNumeroVazioException, FileNotFoundException {
@@ -264,9 +301,9 @@ public class ElypsoService {
 
     public void adicionarNomeNumeroNaImagem(String imagePath, String outputImagePath, Pedido pedido) throws NomeOuNumeroVazioException, IOException {
 
-        if(pedido.getNome().equals("") || pedido.getNumero().equals("") || pedido.getNome() == null || pedido.getNumero() == null){
+        if(pedido.getNome().equals("") || pedido.getNome() == null){
             LOGGER.error("O nome ou número está vázio");
-            throw new NomeOuNumeroVazioException("O nome ou número está vázio ou nullo");
+            throw new NomeOuNumeroVazioException("O nome está vázio ou nullo");
         }
 
         // Carrega a imagem original
