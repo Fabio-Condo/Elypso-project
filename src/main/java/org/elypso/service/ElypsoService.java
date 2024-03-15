@@ -9,6 +9,7 @@ import org.elypso.commandsService.ElypsoCommandsService;
 import org.elypso.domain.PrinterCenterResponse;
 import org.elypso.domain.Pedido;
 import org.elypso.enumerations.Fita;
+import org.elypso.enumerations.Lado;
 import org.elypso.exception.domain.FileNotFoundException;
 import org.elypso.exception.domain.ImpressoraSemFitaException;
 import org.elypso.exception.domain.NomeOuNumeroVazioException;
@@ -41,6 +42,7 @@ public class ElypsoService {
     String frontImagePath   = IMAGES_PATH + FORWARD_SLASH + IMAGEM_FRONTAL_SEM_NOME;
     String backImagePath    = IMAGES_PATH + FORWARD_SLASH + IMAGEM_TRAZEIRA;
     String outputImagePath  = IMAGES_PATH + FORWARD_SLASH + IMAGEM_FRONTAL_GERADA_COM_DADOS;
+    String whiteImagePath    = IMAGES_PATH + FORWARD_SLASH + IMAGEM_BRANCA;
 
     ElypsoCommandsService elypsoCommandsService;
     SocketService socketService;
@@ -50,7 +52,7 @@ public class ElypsoService {
         this.socketService = socketService;
     }
 
-    public void imprimirDadosDoExcel(MultipartFile file, Fita fita) throws IOException {
+    public void imprimirDadosDoExcel(MultipartFile file, Fita fita, Lado lado) throws IOException {
         try (InputStream inputStream = file.getInputStream()) {
             Workbook workbook = new XSSFWorkbook(inputStream);
             Sheet sheet = workbook.getSheetAt(0); // Supondo que os dados estejam na primeira planilha
@@ -72,7 +74,7 @@ public class ElypsoService {
                 // Adicione mais campos conforme necessário
 
                 // Imprimindo os dados do funcionário
-                Pedido pedido= new Pedido(nomeCliente, numeroCliente, numeroApolice, fita);
+                Pedido pedido= new Pedido(nomeCliente, numeroCliente, numeroApolice, fita, lado);
                 executarOperacaoUnica(pedido);
             }
 
@@ -84,7 +86,7 @@ public class ElypsoService {
 
     public Pedido executarOperacaoUnica(Pedido pedido) throws IOException, PedidoComandoException, NomeOuNumeroVazioException, FileNotFoundException {
 
-        PrinterCenterResponse printerCenterResponse;
+        PrinterCenterResponse printerCenterResponse = null;
 
         for (int i = 1; i < FINALIZAR_SEQUENCIA; i++) {
 
@@ -95,9 +97,15 @@ public class ElypsoService {
             } else if (i == CONFIGURAR_PROCESSO_IMPRESSAO) {
                 printerCenterResponse = configurarProcessoImpressao(pedido.getFita());
             } else if (i == DEFINIR_BITMAP_FRONTAL) {
-                printerCenterResponse = definirBitmapImpressaoFrontal(pedido);
+                if (pedido.getLado() == Lado.FRENTE || pedido.getLado() == Lado.FRENTE_VERSO){
+                    printerCenterResponse = definirBitmapImpressaoFrontal(pedido);
+                }else {
+                    printerCenterResponse = definirBitmapImpressaoFrontalBrancaUsadaCasoNaoSejaEscolhidoLadoFrontal();
+                }
             } else if (i == DEFINIR_BITMAP_TRAZEIRO) {
-                printerCenterResponse = definirBitmapImpressaoTrazeiro();
+                if (pedido.getLado() == Lado.VERSO || pedido.getLado() == Lado.FRENTE_VERSO){
+                    printerCenterResponse = definirBitmapImpressaoTrazeiro();
+                }
             } else if (i == REALIZAR_IMPRESSAO) {
                 printerCenterResponse = realizarImpressao();
             } else if (i == FINALIZAR_IMPRESSAO) {
@@ -180,6 +188,13 @@ public class ElypsoService {
         verificarExistenciaArquivoNoDiretorio(IMAGES_PATH, IMAGEM_FRONTAL_SEM_NOME);
         adicionarNomeNumeroNaImagem(frontImagePath, outputImagePath, pedido);
         String imagemEmDadosBase64 = converterBMPImageParaString(outputImagePath);
+        verificarExistenciaArquivoNoDiretorio(IMAGES_PATH, IMAGEM_FRONTAL_GERADA_COM_DADOS); // Depois de gerar a imagem frontal com dados (nome e numero), verifica se existe para impressao
+        return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoDefinirBitmapImpressaoFrontal(imagemEmDadosBase64));
+    }
+
+    public PrinterCenterResponse definirBitmapImpressaoFrontalBrancaUsadaCasoNaoSejaEscolhidoLadoFrontal() throws NomeOuNumeroVazioException, IOException, FileNotFoundException {
+        verificarExistenciaArquivoNoDiretorio(IMAGES_PATH, IMAGEM_BRANCA);
+        String imagemEmDadosBase64 = converterBMPImageParaString(whiteImagePath);
         verificarExistenciaArquivoNoDiretorio(IMAGES_PATH, IMAGEM_FRONTAL_GERADA_COM_DADOS); // Depois de gerar a imagem frontal com dados (nome e numero), verifica se existe para impressao
         return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoDefinirBitmapImpressaoFrontal(imagemEmDadosBase64));
     }
@@ -371,6 +386,22 @@ public class ElypsoService {
         // Salva a imagem resultante
         File outputFile = new File(outputImagePath);
         ImageIO.write(imagem, "bmp", outputFile);
+    }
+
+    public BufferedImage gerarImagemBrancaVazia() {
+        int width = 1016;
+        int height = 648;
+
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2d = image.createGraphics();
+
+        // Preencher a imagem com cor branca
+        g2d.setColor(Color.WHITE);
+        g2d.fillRect(0, 0, width, height);
+
+        g2d.dispose();
+
+        return image;
     }
 
     // Para testes, nao eliminar -> Gerar uma imagem branca com nome

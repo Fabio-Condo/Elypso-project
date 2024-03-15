@@ -1,6 +1,7 @@
 package org.elypso.domain;
 
 import org.elypso.enumerations.Fita;
+import org.elypso.enumerations.Lado;
 
 public class Pedido {
 
@@ -10,14 +11,17 @@ public class Pedido {
 
     private Fita fita;
 
+    private Lado lado;
+
     public Pedido() {
     }
 
-    public Pedido(String nome, String numero, String numeroCliente, Fita fita) {
+    public Pedido(String nome, String numero, String numeroCliente, Fita fita, Lado lado) {
         this.nome = nome;
         this.numero = numero;
         this.numeroCliente = numeroCliente;
         this.fita = fita;
+        this.lado = lado;
     }
 
     public String getNome() {
@@ -50,5 +54,13 @@ public class Pedido {
 
     public void setFita(Fita fita) {
         this.fita = fita;
+    }
+
+    public Lado getLado() {
+        return lado;
+    }
+
+    public void setLado(Lado lado) {
+        this.lado = lado;
     }
 }

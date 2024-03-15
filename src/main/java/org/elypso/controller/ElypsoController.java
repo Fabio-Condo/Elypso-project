@@ -3,6 +3,7 @@ package org.elypso.controller;
 import org.elypso.domain.PrinterCenterResponse;
 import org.elypso.domain.Pedido;
 import org.elypso.enumerations.Fita;
+import org.elypso.enumerations.Lado;
 import org.elypso.exception.domain.FileNotFoundException;
 import org.elypso.exception.domain.NomeOuNumeroVazioException;
 import org.elypso.exception.domain.PedidoComandoException;
@@ -25,11 +26,11 @@ public class ElypsoController {
     }
 
     @PostMapping("/bulk")
-    public ResponseEntity<String> uploadArquivoExcel(@RequestParam("file") MultipartFile file, @RequestParam("fita") Fita fita) throws IOException {
+    public ResponseEntity<String> uploadArquivoExcel(@RequestParam("file") MultipartFile file, @RequestParam("fita") Fita fita, @RequestParam("lado") Lado lado) throws IOException {
         if (file.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("O arquivo está vazio");
         }
-        elypsoService.imprimirDadosDoExcel(file, fita);
+        elypsoService.imprimirDadosDoExcel(file, fita, lado);
         return ResponseEntity.status(HttpStatus.OK).body("Dados dos clientes impressos com sucesso!");
     }
 
@@ -55,7 +56,7 @@ public class ElypsoController {
 
     @GetMapping("/definirBitmapImpressaoFrontal")
     public ResponseEntity<PrinterCenterResponse> definirBitmapImpressaoFrontal() throws IOException, NomeOuNumeroVazioException, FileNotFoundException {
-        Pedido pedido = new Pedido("NOME TESTE", "NUMERO TESTE", "NUMERO CLIENTE TESTE", null);
+        Pedido pedido = new Pedido("NOME TESTE", "NUMERO TESTE", "NUMERO CLIENTE TESTE", null, null);
         return ResponseEntity.status(HttpStatus.OK).body(elypsoService.definirBitmapImpressaoFrontal(pedido));
     }
 
