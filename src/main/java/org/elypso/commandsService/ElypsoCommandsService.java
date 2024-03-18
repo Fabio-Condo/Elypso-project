@@ -9,9 +9,7 @@ public class ElypsoCommandsService {
     String impressora = "Evolis Elypso";
     //String impressora = "Evolis Primacy";
     String timeout = "5000";
-    //String fitaSelecionada = "RM_KO";
-    //String fitaSelecionada = "RC_YMCKO"; // Colorida
-    String sessao = "JOB000001";
+    //String sessao = "JOB000001";
 
     public String gerarComandoIniciarSequencia() {
         String com = "Ss";
@@ -29,7 +27,7 @@ public class ElypsoCommandsService {
                 "}";
     }
 
-    public String gerarComandoInicializarProcessoImpressao() {
+    public String gerarComandoInicializarProcessoImpressao(String sessao) {
         return "{\n" +
                 "\t\"jsonrpc\":\"2.0\",\n" +
                 "\t\"id\":\"1\",\n" +
@@ -43,7 +41,7 @@ public class ElypsoCommandsService {
                 "}\n";
     }
 
-    public String gerarComandoConfigurarProcessoImpressao(Fita fitaSelecionada) {
+    public String gerarComandoConfigurarProcessoImpressao(Fita fitaSelecionada, String sessao) {
 
         return "{\n" +
                 "\t\"jsonrpc\":\"2.0\",\n" +
@@ -72,7 +70,7 @@ public class ElypsoCommandsService {
 
     }
 
-    public String gerarComandoDefinirBitmapImpressaoFrontal(String dadosBase64) {
+    public String gerarComandoDefinirBitmapImpressaoFrontal(String dadosBase64, String sessao) {
 
         dadosBase64 = "base64:" + dadosBase64;
 
@@ -116,7 +114,7 @@ public class ElypsoCommandsService {
 
     }
 
-    public String gerarComandoDefinirBitmapImpressaoTrazeiro(String dadosBase64) {
+    public String gerarComandoDefinirBitmapImpressaoTrazeiro(String dadosBase64, String sessao) {
 
         dadosBase64 = "base64:" + dadosBase64;
 
@@ -136,7 +134,7 @@ public class ElypsoCommandsService {
 
     }
 
-    public String gerarComandoRealizarImpressao() {
+    public String gerarComandoRealizarImpressao(String sessao) {
         return "{\n" +
                 "\t\"jsonrpc\":\"2.0\",\n" +
                 "\t\"id\":\"1\",\n" +
@@ -149,7 +147,7 @@ public class ElypsoCommandsService {
                 "}";
     }
 
-    public String gerarComandoFinalizarImpressao() {
+    public String gerarComandoFinalizarImpressao(String sessao) {
         return "{\n" +
                 "\t\"jsonrpc\":\"2.0\",\n" +
                 "\t\"id\":\"1\",\n" +

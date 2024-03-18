@@ -6,22 +6,27 @@ import org.elypso.enumerations.Lado;
 public class Pedido {
 
     private String nome;
-    private String numeroApolice;
     private String numeroCliente;
+
+    private String numeroApolice;
 
     private Fita fita;
 
     private Lado lado;
 
+    private  String sessao;
+
+
     public Pedido() {
     }
 
-    public Pedido(String nome, String numeroApolice, String numeroCliente, Fita fita, Lado lado) {
+    public Pedido(String nome, String numeroCliente, String numeroApolice, Fita fita, Lado lado, String sessao) {
         this.nome = nome;
-        this.numeroApolice = numeroApolice;
         this.numeroCliente = numeroCliente;
+        this.numeroApolice = numeroApolice;
         this.fita = fita;
         this.lado = lado;
+        this.sessao = sessao;
     }
 
     public String getNome() {
@@ -62,5 +67,13 @@ public class Pedido {
 
     public void setLado(Lado lado) {
         this.lado = lado;
+    }
+
+    public String getSessao() {
+        return sessao;
+    }
+
+    public void setSessao(String sessao) {
+        this.sessao = sessao;
     }
 }

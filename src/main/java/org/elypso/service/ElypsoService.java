@@ -1,6 +1,7 @@
 package org.elypso.service;
 
 import com.google.gson.Gson;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -74,7 +75,7 @@ public class ElypsoService {
                 // Adicione mais campos conforme necessário
 
                 // Imprimindo os dados do funcionário
-                Pedido pedido= new Pedido(nomeCliente, numeroCliente, numeroApolice, fita, lado);
+                Pedido pedido= new Pedido(nomeCliente, numeroCliente, numeroApolice, fita, lado, gerarSessao());
                 executarOperacaoUnica(pedido);
             }
 
@@ -86,6 +87,8 @@ public class ElypsoService {
 
     public Pedido executarOperacaoUnica(Pedido pedido) throws IOException, PedidoComandoException, NomeOuNumeroVazioException, FileNotFoundException {
 
+        pedido.setSessao(gerarSessao());
+
         PrinterCenterResponse printerCenterResponse = null;
 
         for (int i = 1; i < FINALIZAR_SEQUENCIA; i++) {
@@ -93,36 +96,36 @@ public class ElypsoService {
             if (i == INICIALIZAR_SEQUENCIA) {
                 printerCenterResponse = iniciarSequencia();
             } else if (i == INICIALIZAR_PROCESSO_IMPRESSAO) {
-                printerCenterResponse = inicializarProcessoImpressao();
+                printerCenterResponse = inicializarProcessoImpressao(pedido.getSessao());
             } else if (i == CONFIGURAR_PROCESSO_IMPRESSAO) {
-                printerCenterResponse = configurarProcessoImpressao(pedido.getFita());
+                printerCenterResponse = configurarProcessoImpressao(pedido.getFita(), pedido.getSessao());
             } else if (i == DEFINIR_BITMAP_FRONTAL) {
                 if (pedido.getLado() == Lado.FRENTE || pedido.getLado() == Lado.FRENTE_VERSO){
                     printerCenterResponse = definirBitmapImpressaoFrontal(pedido);
                 }else {
-                    printerCenterResponse = definirBitmapImpressaoFrontalBrancaUsadaCasoNaoSejaEscolhidoLadoFrontal();
+                    printerCenterResponse = definirBitmapImpressaoFrontalBrancaUsadaCasoNaoSejaEscolhidoLadoFrontal(pedido.getSessao());
                 }
             } else if (i == DEFINIR_BITMAP_TRAZEIRO) {
                 if (pedido.getLado() == Lado.VERSO || pedido.getLado() == Lado.FRENTE_VERSO){
-                    printerCenterResponse = definirBitmapImpressaoTrazeiro();
+                    printerCenterResponse = definirBitmapImpressaoTrazeiro(pedido.getSessao());
                 }
             } else if (i == REALIZAR_IMPRESSAO) {
-                printerCenterResponse = realizarImpressao();
+                printerCenterResponse = realizarImpressao(pedido.getSessao());
             } else if (i == FINALIZAR_IMPRESSAO) {
-                printerCenterResponse = finalizarImpressao();
+                printerCenterResponse = finalizarImpressao(pedido.getSessao());
             } else {
                 printerCenterResponse = finalizarSequencia();  // I = FINALIZAR_SEQUENCIA
             }
 
-            verificarEventoImpressoraELimparErro();
-            analisarErroOuRespostaRetornadaPeloPrinterCenter(printerCenterResponse, i);
+            analisarErroOuRespostaRetornadaPeloPrinterCenter(printerCenterResponse, i, pedido);
+            verificarEventoImpressoraELimparErro(pedido);
 
         }
 
         return pedido;
     }
 
-    public void verificarEventoImpressoraELimparErro(){
+    public void verificarEventoImpressoraELimparErro(Pedido pedido){
         Runnable task = () -> {
             try {
                 Thread.sleep(3000);
@@ -136,7 +139,7 @@ public class ElypsoService {
 
                     setEvent(erro);
 
-                    finalizarImpressao();
+                    finalizarImpressao(pedido.getSessao());
                     finalizarSequencia();
                     ligarOuReinicializarHardwareImpressora();
                     reinicializarComunicacoesComAImpressora();
@@ -152,7 +155,7 @@ public class ElypsoService {
         thread.start();
     }
 
-    public void analisarErroOuRespostaRetornadaPeloPrinterCenter(PrinterCenterResponse printerCenterResponse, int indiceComando) throws PedidoComandoException, IOException {
+    public void analisarErroOuRespostaRetornadaPeloPrinterCenter(PrinterCenterResponse printerCenterResponse, int indiceComando, Pedido pedido) throws PedidoComandoException, IOException {
 
         if(printerCenterResponse.getError() != null){
 
@@ -161,12 +164,36 @@ public class ElypsoService {
             LOGGER.error("Mensagem do erro (Printer Center): " + printerCenterResponse.getError().getMessage());
 
             if(printerCenterResponse.getError().getMessage().contains("Communication session already reserved")){
-                finalizarImpressao();
+                finalizarImpressao(pedido.getSessao());
                 finalizarSequencia();
                 ligarOuReinicializarHardwareImpressora();
                 reinicializarComunicacoesComAImpressora();
                 throw new PedidoComandoException("Communication session already reserved");
             }
+
+            //if(printerCenterResponse.getError().getMessage().contains("Printing session already in progress for the device")){
+            //    finalizarImpressao(pedido.getSessao());
+            //    finalizarSequencia();
+            //    ligarOuReinicializarHardwareImpressora();
+            //    reinicializarComunicacoesComAImpressora();
+            //    throw new PedidoComandoException("Printing session already in progress for the device");
+            //}
+
+            //if(printerCenterResponse.getError().getMessage().contains("Invalid printing session")){
+            //    finalizarImpressao(pedido.getSessao());
+            //    finalizarSequencia();
+            //    ligarOuReinicializarHardwareImpressora();
+            //    reinicializarComunicacoesComAImpressora();
+            //    throw new PedidoComandoException("Invalid printing session");
+            //}
+
+            //if(printerCenterResponse.getError().getMessage().contains("Communication session already reserved")){
+            //    finalizarImpressao(pedido.getSessao());
+            //    finalizarSequencia();
+            //    ligarOuReinicializarHardwareImpressora();
+            //    reinicializarComunicacoesComAImpressora();
+            //    throw new PedidoComandoException("Communication session already reserved");
+            //}
 
             throw new PedidoComandoException("Erro na operação " + indiceComando + ". Mensagem do printer center: " + printerCenterResponse.getError().getMessage()); // Vai lancar a Excepption e fazer um break
         }
@@ -176,12 +203,12 @@ public class ElypsoService {
         return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoIniciarSequencia());
     }
 
-    public PrinterCenterResponse inicializarProcessoImpressao() throws IOException {
-        return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoInicializarProcessoImpressao());
+    public PrinterCenterResponse inicializarProcessoImpressao(String sessao) throws IOException {
+        return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoInicializarProcessoImpressao(sessao));
     }
 
-    public PrinterCenterResponse configurarProcessoImpressao(Fita fita) throws IOException {
-        return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoConfigurarProcessoImpressao(fita));
+    public PrinterCenterResponse configurarProcessoImpressao(Fita fita, String sessao) throws IOException {
+        return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoConfigurarProcessoImpressao(fita, sessao));
     }
 
     public PrinterCenterResponse definirBitmapImpressaoFrontal(Pedido pedido) throws NomeOuNumeroVazioException, IOException, FileNotFoundException {
@@ -189,28 +216,28 @@ public class ElypsoService {
         adicionarNomeNumeroNaImagem(frontImagePath, outputImagePath, pedido);
         String imagemEmDadosBase64 = converterBMPImageParaString(outputImagePath);
         verificarExistenciaArquivoNoDiretorio(IMAGES_PATH, IMAGEM_FRONTAL_GERADA_COM_DADOS); // Depois de gerar a imagem frontal com dados (nome e numero), verifica se existe para impressao
-        return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoDefinirBitmapImpressaoFrontal(imagemEmDadosBase64));
+        return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoDefinirBitmapImpressaoFrontal(imagemEmDadosBase64, pedido.getSessao()));
     }
 
-    public PrinterCenterResponse definirBitmapImpressaoFrontalBrancaUsadaCasoNaoSejaEscolhidoLadoFrontal() throws NomeOuNumeroVazioException, IOException, FileNotFoundException {
+    public PrinterCenterResponse definirBitmapImpressaoFrontalBrancaUsadaCasoNaoSejaEscolhidoLadoFrontal(String sessao) throws NomeOuNumeroVazioException, IOException, FileNotFoundException {
         verificarExistenciaArquivoNoDiretorio(IMAGES_PATH, IMAGEM_BRANCA);
         String imagemEmDadosBase64 = converterBMPImageParaString(whiteImagePath);
         verificarExistenciaArquivoNoDiretorio(IMAGES_PATH, IMAGEM_FRONTAL_GERADA_COM_DADOS); // Depois de gerar a imagem frontal com dados (nome e numero), verifica se existe para impressao
-        return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoDefinirBitmapImpressaoFrontal(imagemEmDadosBase64));
+        return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoDefinirBitmapImpressaoFrontal(imagemEmDadosBase64, sessao));
     }
 
-    public PrinterCenterResponse definirBitmapImpressaoTrazeiro() throws IOException, FileNotFoundException {
+    public PrinterCenterResponse definirBitmapImpressaoTrazeiro(String sessao) throws IOException, FileNotFoundException {
         verificarExistenciaArquivoNoDiretorio(IMAGES_PATH, IMAGEM_TRAZEIRA);
         String imagemEmDadosBase64 = converterBMPImageParaString(backImagePath);
-        return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoDefinirBitmapImpressaoTrazeiro(imagemEmDadosBase64));
+        return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoDefinirBitmapImpressaoTrazeiro(imagemEmDadosBase64, sessao));
     }
 
-    public PrinterCenterResponse realizarImpressao() throws IOException {
-        return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoRealizarImpressao());
+    public PrinterCenterResponse realizarImpressao(String sessao) throws IOException {
+        return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoRealizarImpressao(sessao));
     }
 
-    public PrinterCenterResponse finalizarImpressao() throws IOException {
-        return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoFinalizarImpressao());
+    public PrinterCenterResponse finalizarImpressao(String sessao) throws IOException {
+        return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoFinalizarImpressao(sessao));
     }
 
     public PrinterCenterResponse finalizarSequencia() throws IOException {
@@ -386,6 +413,10 @@ public class ElypsoService {
         // Salva a imagem resultante
         File outputFile = new File(outputImagePath);
         ImageIO.write(imagem, "bmp", outputFile);
+    }
+
+    public String gerarSessao() {
+        return "JOB" + RandomStringUtils.randomNumeric(6);
     }
 
     public BufferedImage gerarImagemBrancaVazia() {
