@@ -330,7 +330,7 @@ public class ElypsoService {
         Graphics2D g2d_numeroClientText = imagem.createGraphics();
         Graphics2D g2d_numeroClientTextBold = imagem.createGraphics();
         Graphics2D g2d_numeroClientTextValue = imagem.createGraphics();
-        Graphics2D g2d_numero = imagem.createGraphics();
+        Graphics2D g2d_numeroApolice = imagem.createGraphics();
 
         // Configura a fonte e a cor do texto
         Font fonteNome = new Font("Agency FB", Font.BOLD, 260);
@@ -349,9 +349,9 @@ public class ElypsoService {
         g2d_numeroClientTextValue.setFont(numeroClientTextValue);
         g2d_numeroClientTextValue.setColor(Color.WHITE);
 
-        Font fonteNumero = new Font("Arial", Font.PLAIN, 120);
-        g2d_numero.setFont(fonteNumero);
-        g2d_numero.setColor(Color.WHITE);
+        Font fonteNumeroApolice = new Font("Arial", Font.PLAIN, 120);
+        g2d_numeroApolice.setFont(fonteNumeroApolice);
+        g2d_numeroApolice.setColor(Color.WHITE);
 
         // Define a posição onde o nome e o número serão adicionados (neste exemplo, no canto superior esquerdo)
         //int xNome = 170;
@@ -367,21 +367,21 @@ public class ElypsoService {
         int yNumeroClientTextBold = 2295;
         int xNumeroClientTextValue = 850;
         int yNumeroClientTextValue = 2295;
-        int xNumero = 265;
-        int yNumero = 2480;
+        int xNumeroApolice = 265;
+        int yNumeroApolice = 2480;
 
         // Desenha o nome e o número na imagem
         g2d_nome.drawString(pedido.getNome().toUpperCase(), xNome, yNome);
         g2d_numeroClientText.drawString("nº", xNumeroClientText, yNumeroClientText);
         g2d_numeroClientTextBold.drawString("cliente:", xNumeroClientTextBold, yNumeroClientTextBold);
         g2d_numeroClientTextValue.drawString(pedido.getNumeroCliente().toUpperCase(), xNumeroClientTextValue, yNumeroClientTextValue);
-        g2d_numero.drawString(pedido.getNumero().toUpperCase(), xNumero, yNumero);
+        g2d_numeroApolice.drawString(pedido.getNumeroApolice().toUpperCase(), xNumeroApolice, yNumeroApolice);
 
         // Libera os recursos do objeto Graphics2D
         g2d_nome.dispose();
         g2d_numeroClientText.dispose();
         g2d_numeroClientTextBold.dispose();
-        g2d_numero.dispose();
+        g2d_numeroApolice.dispose();
 
         // Salva a imagem resultante
         File outputFile = new File(outputImagePath);
