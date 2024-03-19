@@ -6,12 +6,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class ElypsoCommandsService {
 
-    String impressora = "Evolis Elypso";
+    //String impressora = "Evolis Elypso";
     //String impressora = "Evolis Primacy";
-    String timeout = "5000";
     //String sessao = "JOB000001";
+    String timeout = "5000";
 
-    public String gerarComandoIniciarSequencia() {
+    public String gerarComandoIniciarSequencia(String impressora) {
         String com = "Ss";
 
         return "{\n" +
@@ -27,7 +27,7 @@ public class ElypsoCommandsService {
                 "}";
     }
 
-    public String gerarComandoInicializarProcessoImpressao(String sessao) {
+    public String gerarComandoInicializarProcessoImpressao(String impressora, String sessao) {
         return "{\n" +
                 "\t\"jsonrpc\":\"2.0\",\n" +
                 "\t\"id\":\"1\",\n" +
@@ -160,7 +160,7 @@ public class ElypsoCommandsService {
                 "}";
     }
 
-    public String gerarComandoFinalizarSequencia() {
+    public String gerarComandoFinalizarSequencia(String impressora) {
         String com = "Se";
 
         return "{\n" +
@@ -176,7 +176,7 @@ public class ElypsoCommandsService {
                 "}";
     }
 
-    public String gerarComandosLigarOuReinicializarHardwareImpressora() {
+    public String gerarComandosLigarOuReinicializarHardwareImpressora(String impressora) {
         String com = "Srs";
 
         return "{\n" +
@@ -193,7 +193,7 @@ public class ElypsoCommandsService {
 
     }
 
-    public String gerarComandoVerificarStatusImpressora() {
+    public String gerarComandoVerificarStatusImpressora(String impressora) {
 
         return "{\r\n" +
                 "	\"jsonrpc\":\"2.0\",\r\n" +
@@ -209,7 +209,7 @@ public class ElypsoCommandsService {
                 "";
     }
 
-    public String gerarComandoReinicializarComunicacoesComAImpressora() {
+    public String gerarComandoReinicializarComunicacoesComAImpressora(String impressora) {
         return "{\n" +
                 " \"id\": \"1\",\n" +
                 " \"jsonrpc\": \"2.0\",\n" +
@@ -221,7 +221,7 @@ public class ElypsoCommandsService {
                 "}\n";
     }
 
-    public String gerarComandoVerificarFita(int opcao) {
+    public String gerarComandoVerificarFita(int opcao, String impressora) {
 
         String comando1 = "Rkt;type;";
         String comando2 = "Rkt;label;";
@@ -256,7 +256,7 @@ public class ElypsoCommandsService {
     /**
      * Realiza a verificacao da impressora, caso haja um erro ou aviso relacionado a uma impressora especifica apos a realizacao do fluxo de impressao(Print.Begin ate Print.Print)
      */
-    public String criarComandoGetEvent() {
+    public String criarComandoGetEvent(String impressora) {
         return "{\n" +
                 " \"id\": \"1\",\n" +
                 " \"jsonrpc\": \"2.0\",\n" +
@@ -272,7 +272,7 @@ public class ElypsoCommandsService {
     /**
      * Realiza o cancelamento do erro, caso a impressora tenha algum erro associada a mesma naquele momento, +erro ou aviso relacionados a uma impressora especifica apos a realizacao do fluxo de impressao(Print.Begin ate Print.Print)
      */
-    public String criarComandoSetEvent(String erro) {
+    public String criarComandoSetEvent(String erro, String impressora) {
         return "{\n" +
                 " \"id\": \"1\",\n" +
                 " \"jsonrpc\": \"2.0\",\n" +

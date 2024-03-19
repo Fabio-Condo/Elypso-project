@@ -26,11 +26,11 @@ public class ElypsoController {
     }
 
     @PostMapping("/bulk")
-    public ResponseEntity<String> uploadArquivoExcel(@RequestParam("file") MultipartFile file, @RequestParam("fita") Fita fita, @RequestParam("lado") Lado lado) throws IOException {
+    public ResponseEntity<String> uploadArquivoExcel(@RequestParam("file") MultipartFile file, @RequestParam("impressora") String impressora, @RequestParam("fita") Fita fita, @RequestParam("lado") Lado lado) throws IOException {
         if (file.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("O arquivo está vazio");
         }
-        elypsoService.imprimirDadosDoExcel(file, fita, lado);
+        elypsoService.imprimirDadosDoExcel(file, impressora, fita, lado);
         return ResponseEntity.status(HttpStatus.OK).body("Dados dos clientes impressos com sucesso!");
     }
 
@@ -39,14 +39,14 @@ public class ElypsoController {
         return ResponseEntity.status(HttpStatus.OK).body(elypsoService.executarOperacaoUnica(pedido));
     }
 
-    @GetMapping("/iniciarSequencia")
-    public ResponseEntity<PrinterCenterResponse> iniciarSequencia() throws IOException {
-        return ResponseEntity.status(HttpStatus.OK).body(elypsoService.iniciarSequencia());
+    @GetMapping("/iniciarSequencia/{impressora}")
+    public ResponseEntity<PrinterCenterResponse> iniciarSequencia(@PathVariable("impressora") String impressora) throws IOException {
+        return ResponseEntity.status(HttpStatus.OK).body(elypsoService.iniciarSequencia(impressora));
     }
 
     @GetMapping("/inicializarProcessoImpressao")
     public ResponseEntity<PrinterCenterResponse> inicializarProcessoImpressao() throws IOException {
-        return ResponseEntity.status(HttpStatus.OK).body(elypsoService.inicializarProcessoImpressao("JOB000001"));
+        return ResponseEntity.status(HttpStatus.OK).body(elypsoService.inicializarProcessoImpressao("Evolis Elypso", "JOB000001"));
     }
 
     @GetMapping("/configurarProcessoImpressao")
@@ -56,7 +56,7 @@ public class ElypsoController {
 
     @GetMapping("/definirBitmapImpressaoFrontal")
     public ResponseEntity<PrinterCenterResponse> definirBitmapImpressaoFrontal() throws IOException, NomeOuNumeroVazioException, FileNotFoundException {
-        Pedido pedido = new Pedido("NOME TESTE", "NUMERO CLIENTE", "NUMERO APOLICE", Fita.RM_KO, Lado.FRENTE_VERSO, "JOB000001");
+        Pedido pedido = new Pedido("NOME TESTE", "NUMERO CLIENTE", "NUMERO APOLICE", "Evolis Elypso", Fita.RM_KO, Lado.FRENTE_VERSO, "JOB000001");
         return ResponseEntity.status(HttpStatus.OK).body(elypsoService.definirBitmapImpressaoFrontal(pedido));
     }
 
@@ -75,33 +75,33 @@ public class ElypsoController {
         return ResponseEntity.status(HttpStatus.OK).body(elypsoService.finalizarImpressao("JOB000001"));
     }
 
-    @GetMapping("/finalizarSequencia")
-    public ResponseEntity<PrinterCenterResponse> finalizarSequencia() throws IOException {
-        return ResponseEntity.status(HttpStatus.OK).body(elypsoService.finalizarSequencia());
+    @GetMapping("/finalizarSequencia/{impressora}")
+    public ResponseEntity<PrinterCenterResponse> finalizarSequencia(@PathVariable("impressora") String impressora) throws IOException {
+        return ResponseEntity.status(HttpStatus.OK).body(elypsoService.finalizarSequencia(impressora));
     }
 
-    @GetMapping("/ligarOuReinicializarHardwareImpressora")
-    public ResponseEntity<PrinterCenterResponse> ligarOuReinicializarHardwareImpressora() throws IOException {
-        return ResponseEntity.status(HttpStatus.OK).body(elypsoService.ligarOuReinicializarHardwareImpressora());
+    @GetMapping("/ligarOuReinicializarHardwareImpressora/{impressora}")
+    public ResponseEntity<PrinterCenterResponse> ligarOuReinicializarHardwareImpressora(@PathVariable("impressora") String impressora) throws IOException {
+        return ResponseEntity.status(HttpStatus.OK).body(elypsoService.ligarOuReinicializarHardwareImpressora(impressora));
     }
 
-    @GetMapping("/status")
-    public ResponseEntity<PrinterCenterResponse> verificarStatus() throws IOException {
-        return ResponseEntity.status(HttpStatus.OK).body(elypsoService.verificarStatus());
+    @GetMapping("/status/{impressora}")
+    public ResponseEntity<PrinterCenterResponse> verificarStatus(@PathVariable("impressora") String impressora) throws IOException {
+        return ResponseEntity.status(HttpStatus.OK).body(elypsoService.verificarStatus(impressora));
     }
 
-    @GetMapping("/reinicializarComunicacao")
-    public ResponseEntity<PrinterCenterResponse> reinicializarComunicacoesComAImpressora() throws IOException {
-        return ResponseEntity.status(HttpStatus.OK).body(elypsoService.reinicializarComunicacoesComAImpressora());
+    @GetMapping("/reinicializarComunicacao/{impressora}")
+    public ResponseEntity<PrinterCenterResponse> reinicializarComunicacoesComAImpressora(@PathVariable("impressora") String impressora) throws IOException {
+        return ResponseEntity.status(HttpStatus.OK).body(elypsoService.reinicializarComunicacoesComAImpressora(impressora));
     }
 
-    @GetMapping("/verificarFita")
-    public ResponseEntity<PrinterCenterResponse> verificarFita() throws IOException {
-        return ResponseEntity.status(HttpStatus.OK).body(elypsoService.verificarFita());
+    @GetMapping("/verificarFita/{impressora}")
+    public ResponseEntity<PrinterCenterResponse> verificarFita(@PathVariable("impressora") String impressora) throws IOException {
+        return ResponseEntity.status(HttpStatus.OK).body(elypsoService.verificarFita(impressora));
     }
 
-    @GetMapping("/getEvent")
-    public ResponseEntity<PrinterCenterResponse> getEvent() throws IOException {
-        return ResponseEntity.status(HttpStatus.OK).body(elypsoService.getEvent());
+    @GetMapping("/getEvent/{impressora}")
+    public ResponseEntity<PrinterCenterResponse> getEvent(@PathVariable("impressora") String impressora) throws IOException {
+        return ResponseEntity.status(HttpStatus.OK).body(elypsoService.getEvent(impressora));
     }
 }
