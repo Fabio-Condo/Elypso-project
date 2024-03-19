@@ -27,9 +27,6 @@ public class ElypsoController {
 
     @PostMapping("/bulk")
     public ResponseEntity<String> uploadArquivoExcel(@RequestParam("file") MultipartFile file, @RequestParam("impressora") String impressora, @RequestParam("fita") Fita fita, @RequestParam("lado") Lado lado) throws IOException {
-        if (file.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("O arquivo está vazio");
-        }
         elypsoService.imprimirDadosDoExcel(file, impressora, fita, lado);
         return ResponseEntity.status(HttpStatus.OK).body("Dados dos clientes impressos com sucesso!");
     }
