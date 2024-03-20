@@ -98,7 +98,7 @@ public class ElypsoService {
             } else if (i == INICIALIZAR_PROCESSO_IMPRESSAO) {
                 printerCenterResponse = inicializarProcessoImpressao(pedido.getImpressora(), pedido.getSessao());
             } else if (i == CONFIGURAR_PROCESSO_IMPRESSAO) {
-                printerCenterResponse = configurarProcessoImpressao(pedido.getFita(), pedido.getSessao());
+                printerCenterResponse = configurarProcessoImpressao(pedido.getImpressora(), pedido.getFita(), pedido.getSessao());
             } else if (i == DEFINIR_BITMAP_FRONTAL) {
                 if (pedido.getLado() == Lado.FRENTE || pedido.getLado() == Lado.FRENTE_VERSO){
                     printerCenterResponse = definirBitmapImpressaoFrontal(pedido);
@@ -207,8 +207,8 @@ public class ElypsoService {
         return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoInicializarProcessoImpressao(impressora, sessao));
     }
 
-    public PrinterCenterResponse configurarProcessoImpressao(Fita fita, String sessao) throws IOException {
-        return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoConfigurarProcessoImpressao(fita, sessao));
+    public PrinterCenterResponse configurarProcessoImpressao(String impressora, Fita fita, String sessao) throws IOException {
+        return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoConfigurarProcessoImpressao(impressora, fita, sessao));
     }
 
     public PrinterCenterResponse definirBitmapImpressaoFrontal(Pedido pedido) throws NomeOuNumeroVazioException, IOException, FileNotFoundException {

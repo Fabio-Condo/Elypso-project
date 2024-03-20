@@ -6,9 +6,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class ElypsoCommandsService {
 
-    //String impressora = "Evolis Elypso";
-    //String impressora = "Evolis Primacy";
-    //String sessao = "JOB000001";
     String timeout = "5000";
 
     public String gerarComandoIniciarSequencia(String impressora) {
@@ -41,33 +38,32 @@ public class ElypsoCommandsService {
                 "}\n";
     }
 
-    public String gerarComandoConfigurarProcessoImpressao(Fita fitaSelecionada, String sessao) {
-
-        return "{\n" +
-                "\t\"jsonrpc\":\"2.0\",\n" +
-                "\t\"id\":\"1\",\n" +
-                "\t\"method\":\"PRINT.Set\",\n" +
-                "\t\"params\":\n" +
-                "\t{\n" +
-
-                // 1.3 SDK VERSION  "data":"GRibbonType=RC_YMCKO;Duplex=HORIZONTAL;GDuplexType=DUPLEX_CC;IGSendSpoolerSession=OFF",
-                "\t\t\"data\":\"FColorBrightness=VAL20;FColorContrast=VAL20;GRibbonType=" + fitaSelecionada + ";Duplex=NONE;IGIQLACC=VAL10;IGIQLACM=VAL10;IGIQLACY=VAL10;GSmoothing=ADVSMOOTH;Resolution=DPI600300\",\n" + // Usar se a fita for RM_KO (COLORIDA). Brilho adicionado
-                //"\t\t\"data\":\"GRibbonType=" + fitaSelecionada + ";Duplex=NONE;IGIQLACC=VAL10;IGIQLACM=VAL10;IGIQLACY=VAL10;GSmoothing=ADVSMOOTH;Resolution=DPI600300\",\n" + // Usar se a fita for RM_KO (COLORIDA). Brilho nao adicionado
-
-                //"\t\t\"data\":\"FColorBrightness=VAL12;GRibbonType=" + fitaSelecionada + ";Duplex=NONE;Resolution=DPI600300\",\n" + // Se a fita for KO (PRETA)
-                //"\t\t\"data\":\"FColorBrightness=VAL12;GRibbonType=" + fitaSelecionada + ";Duplex=NONE;Resolution=DPI1200\",\n" +
-
-                //"\t\t\"data\":\"GRibbonType=" + fitaSelecionada + ";Duplex=HORIZONTAL;GDuplexType=DUPLEX_CC;Resolution=DPI600300\",\n" + // Se a impressoa for Duplex e nao SIMPLEX
-                //"\t\t\"data\":\"GRibbonType=" + fitaSelecionada + ";Duplex=NONE;GDuplexType=DUPLEX_MM;Resolution=DPI600300\",\n" + // Se a impressoa for Duplex e nao SIMPLEX
-
-                "\t\t\"timeout\":\"" + timeout + "\",\n" +
-                "\t\t\"session\":\"" + sessao + "\"\n" +
-                "\t}\n" +
-                "}";
-
-                // Duplex funciona no Primacy
-                // Duplex=HORIZONTAL -> Nao aceita
-
+    public String gerarComandoConfigurarProcessoImpressao(String impressora, Fita fitaSelecionada, String sessao) {
+        if (impressora.contains("Primacy")) {
+            return "{\n" +
+                    "\t\"jsonrpc\":\"2.0\",\n" +
+                    "\t\"id\":\"1\",\n" +
+                    "\t\"method\":\"PRINT.Set\",\n" +
+                    "\t\"params\":\n" +
+                    "\t{\n" +
+                    "\t\t\"data\":\"FColorBrightness=VAL20;FColorContrast=VAL20;GRibbonType=" + fitaSelecionada + ";Duplex=NONE;GDuplexType=DUPLEX_MM;IGIQLACC=VAL10;IGIQLACM=VAL10;IGIQLACY=VAL10;GSmoothing=ADVSMOOTH;Resolution=DPI600300\",\n" +
+                    "\t\t\"session\":\"" + sessao + "\",\n" +
+                    "\t\t\"timeout\":\"" + timeout + "\"\n" +
+                    "\t}\n" +
+                    "}";
+        } else {
+            return "{\n" +
+                    "\t\"jsonrpc\":\"2.0\",\n" +
+                    "\t\"id\":\"1\",\n" +
+                    "\t\"method\":\"PRINT.Set\",\n" +
+                    "\t\"params\":\n" +
+                    "\t{\n" +
+                    "\t\t\"data\":\"FColorBrightness=VAL20;FColorContrast=VAL20;GRibbonType=" + fitaSelecionada + ";Duplex=NONE;IGIQLACC=VAL10;IGIQLACM=VAL10;IGIQLACY=VAL10;GSmoothing=ADVSMOOTH;Resolution=DPI600300\",\n" +
+                    "\t\t\"timeout\":\"" + timeout + "\",\n" +
+                    "\t\t\"session\":\"" + sessao + "\"\n" +
+                    "\t}\n" +
+                    "}";
+        }
     }
 
     public String gerarComandoDefinirBitmapImpressaoFrontal(String dadosBase64, String sessao) {
@@ -87,30 +83,6 @@ public class ElypsoCommandsService {
                 "                \"data\":\"" + dadosBase64 + "\"\n" +
                 "    }\n" +
                 "}";
-
-        /*
-        return "{\n" +
-                "\t\"jsonrpc\": \"2.0\",\n" +
-                "\t\"id\": \"1\",\n" +
-                "\t\"method\": \"PRINT.SetBitmap\",\n" +
-                "\t\"params\": [\n" +
-                "\t\t{\n" +
-                "\t\t\t\"session\": \"" + sessao + "\",\n" +
-                "\t\t\t\"timeout\": \"" + timeout + "\",\n" +
-                "\t\t\t\"face\": \"front\",\n" +
-                "\t\t\t\"panel\": \"resin\",\n" +
-                "\t\t\t\"data\": \"" + dadosBase64 + "\"\n" +
-                "\t\t},\n" +
-                "\t\t{\n" +
-                "\t\t\t\"session\": \"" + sessao + "\",\n" +
-                "\t\t\t\"timeout\": \"" + timeout + "\",\n" +
-                "\t\t\t\"face\": \"back\",\n" +
-                "\t\t\t\"panel\": \"resin\",\n" +
-                "\t\t\t\"data\": \"" + dadosBase64 + "\"\n" +
-                "\t\t}\n" +
-                "\t]\n" +
-                "}";
-         */
 
     }
 

@@ -48,9 +48,9 @@ public class ElypsoController {
         return ResponseEntity.status(HttpStatus.OK).body(elypsoService.inicializarProcessoImpressao(impressora, sessao));
     }
 
-    @GetMapping("/configurarProcessoImpressao/{fita}")
-    public ResponseEntity<PrinterCenterResponse> configurarProcessoImpressao(@PathVariable("fita") Fita fita) throws IOException {
-        return ResponseEntity.status(HttpStatus.OK).body(elypsoService.configurarProcessoImpressao(fita, sessao));
+    @GetMapping("/configurarProcessoImpressao/{impressora}/{fita}")
+    public ResponseEntity<PrinterCenterResponse> configurarProcessoImpressao(@PathVariable("impressora") String impressora, @PathVariable("fita") Fita fita) throws IOException {
+        return ResponseEntity.status(HttpStatus.OK).body(elypsoService.configurarProcessoImpressao(impressora, fita, sessao));
     }
 
     @GetMapping("/definirBitmapImpressaoFrontal")
