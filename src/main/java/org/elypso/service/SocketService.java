@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 
+import java.io.IOException;
 import java.net.Socket;
 
 @Configuration
@@ -18,16 +19,16 @@ public class SocketService {
             int port = 18000;
             Socket socket = new Socket(ip, port);
             //socket.setSoTimeout(5000);
-            LOGGER.info("Evolis Printer center URL: " + ip + ":" + port + " [connected]");
-            //socket.close();
-            return socket; // Analizar
+            LOGGER.info("Evolis Printer center URL: {}:{} [connected]", ip, port);
+            return socket;
 
         } catch (Exception e) {
-            System.out.println("Communication failed :\n");
-            System.out.println(" - check TCP communication is activated\n");
-            System.out.println(" - check the service is activated\n");
-            System.out.println(" - check your IP address and port\n");
-            return null; // Analizar
+            LOGGER.error("Failed to establish communication", e);
+            LOGGER.error("Possible reasons:");
+            LOGGER.error("- Check if TCP communication is activated");
+            LOGGER.error("- Check if the service is activated");
+            LOGGER.error("- Check your IP address and port");
+            return null;
         }
 
     }
