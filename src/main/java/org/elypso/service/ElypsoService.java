@@ -18,6 +18,8 @@ import org.elypso.exception.domain.PedidoComandoException;
 import org.elypso.repository.ElypsoRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -141,11 +143,9 @@ public class ElypsoService {
         return elypsoRepository.save(pedido);
     }
 
-    public List<Pedido> listarPedidos(){
-        LOGGER.info("Listando os pedidos");
-        return elypsoRepository.findAll();
+    public Page<Pedido> listarPedidos(String name, Pageable pageable) {
+        return elypsoRepository.findByAnyProperty(name, pageable);
     }
-
 
     public void verificarEventoImpressoraELimparErro(Pedido pedido){
         Runnable task = () -> {

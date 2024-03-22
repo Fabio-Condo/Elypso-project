@@ -1,5 +1,6 @@
 package org.elypso.controller;
 
+import org.elypso.Dto.PedidoDTO;
 import org.elypso.domain.PrinterCenterResponse;
 import org.elypso.domain.Pedido;
 import org.elypso.enumerations.Fita;
@@ -8,13 +9,14 @@ import org.elypso.exception.domain.FileNotFoundException;
 import org.elypso.exception.domain.NomeOuNumeroVazioException;
 import org.elypso.exception.domain.PedidoComandoException;
 import org.elypso.service.ElypsoService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 
 @RestController
 @RequestMapping(path = {"/elypso"})
@@ -35,8 +37,8 @@ public class ElypsoController {
     }
 
     @GetMapping
-    public List<Pedido> listar(){
-        return elypsoService.listarPedidos();
+    public Page<Pedido> listarPedidos(@RequestParam(required = false, defaultValue = "") String name, Pageable pageable){
+        return elypsoService.listarPedidos(name, pageable);
     }
 
     @PostMapping("/bulk")
@@ -46,7 +48,8 @@ public class ElypsoController {
     }
 
     @PostMapping("/executarOperacaoUnica")
-    public ResponseEntity<Pedido> executarOperacaoUnica(@RequestBody Pedido pedido) throws IOException, PedidoComandoException, NomeOuNumeroVazioException, FileNotFoundException {
+    public ResponseEntity<Pedido> executarOperacaoUnica(@RequestBody PedidoDTO pedidoDTO) throws IOException, PedidoComandoException, NomeOuNumeroVazioException, FileNotFoundException {
+        Pedido pedido = new Pedido(pedidoDTO.getNome(), pedidoDTO.getNumeroCliente(), pedidoDTO.getNumeroApolice(), pedidoDTO.getImpressora(), pedidoDTO.getLado());
         return ResponseEntity.status(HttpStatus.OK).body(elypsoService.executarOperacaoUnica(pedido));
     }
 
