@@ -60,7 +60,7 @@ public class ElypsoService {
         this.elypsoRepository = elypsoRepository;
     }
 
-    public void imprimirDadosDoExcel(MultipartFile file, String impressora, Lado lado) throws IOException {
+    public void imprimirEmBulk(MultipartFile file, String impressora, Lado lado) throws IOException {
         try (InputStream inputStream = file.getInputStream()) {
             Workbook workbook = new XSSFWorkbook(inputStream);
             Sheet sheet = workbook.getSheetAt(0); // Supondo que os dados estejam na primeira planilha
@@ -145,80 +145,6 @@ public class ElypsoService {
 
     public Page<Pedido> listarPedidos(String name, Pageable pageable) {
         return elypsoRepository.findByAnyProperty(name, pageable);
-    }
-
-    public void verificarEventoImpressoraELimparErro(Pedido pedido){
-        Runnable task = () -> {
-            try {
-                Thread.sleep(3000);
-                PrinterCenterResponse printerCenterResponse = getEvent(pedido.getImpressora()); // Pegar o erro, caso exista
-                if(!printerCenterResponse.getResult().equals("NONE")){
-
-                    // Dividir a string pelo caractere ":"   -> // EX: DEF_NO_RIBBON:CANCEL
-                    String[] partes = printerCenterResponse.getResult().split(":"); // Dividir a resposta e pegar a primeira parte que contem o erro
-                    String erro = partes[0];
-                    String accoes = partes[1];
-
-                    setEvent(erro, pedido.getImpressora());
-
-                    finalizarImpressao(pedido.getSessao());
-                    finalizarSequencia(pedido.getImpressora());
-                    ligarOuReinicializarHardwareImpressora(pedido.getImpressora());
-                    reinicializarComunicacoesComAImpressora(pedido.getImpressora());
-
-                    // Criar o metodo que vai lancar todos erros
-                    throw new ImpressoraSemFitaException(printerCenterResponse.getResult());
-                }
-            } catch (IOException | InterruptedException | ImpressoraSemFitaException e) {
-                throw new RuntimeException(e);
-            }
-        };
-        Thread thread = new Thread(task);
-        thread.start();
-    }
-
-    public void analisarErroOuRespostaRetornadaPeloPrinterCenter(PrinterCenterResponse printerCenterResponse, int indiceComando, Pedido pedido) throws PedidoComandoException, IOException {
-
-        if(printerCenterResponse.getError() != null){
-
-            LOGGER.error("Erro na operação " + indiceComando);
-            LOGGER.error("Codigo do erro (Printer Center): " + printerCenterResponse.getError().getCode());
-            LOGGER.error("Mensagem do erro (Printer Center): " + printerCenterResponse.getError().getMessage());
-
-            if(printerCenterResponse.getError().getMessage().contains("Communication session already reserved")){
-                finalizarImpressao(pedido.getSessao());
-                finalizarSequencia(pedido.getImpressora());
-                ligarOuReinicializarHardwareImpressora(pedido.getImpressora());
-                reinicializarComunicacoesComAImpressora(pedido.getImpressora());
-                throw new PedidoComandoException("Communication session already reserved");
-            }
-
-            //if(printerCenterResponse.getError().getMessage().contains("Printing session already in progress for the device")){
-            //    finalizarImpressao(pedido.getSessao());
-            //    finalizarSequencia();
-            //    ligarOuReinicializarHardwareImpressora();
-            //    reinicializarComunicacoesComAImpressora();
-            //    throw new PedidoComandoException("Printing session already in progress for the device");
-            //}
-
-            //if(printerCenterResponse.getError().getMessage().contains("Invalid printing session")){
-            //    finalizarImpressao(pedido.getSessao());
-            //    finalizarSequencia();
-            //    ligarOuReinicializarHardwareImpressora();
-            //    reinicializarComunicacoesComAImpressora();
-            //    throw new PedidoComandoException("Invalid printing session");
-            //}
-
-            //if(printerCenterResponse.getError().getMessage().contains("Communication session already reserved")){
-            //    finalizarImpressao(pedido.getSessao());
-            //    finalizarSequencia();
-            //    ligarOuReinicializarHardwareImpressora();
-            //    reinicializarComunicacoesComAImpressora();
-            //    throw new PedidoComandoException("Communication session already reserved");
-            //}
-
-            throw new PedidoComandoException("Erro na operação " + indiceComando + ". Mensagem do printer center: " + printerCenterResponse.getError().getMessage()); // Vai lancar a Excepption e fazer um break
-        }
     }
 
     public PrinterCenterResponse iniciarSequencia(String impressora) throws IOException {
@@ -361,6 +287,80 @@ public class ElypsoService {
         //System.out.println("error message: " + printerCenterResponse.getError().getMessage());
 
         return printerCenterResponse;
+    }
+
+    public void verificarEventoImpressoraELimparErro(Pedido pedido){
+        Runnable task = () -> {
+            try {
+                Thread.sleep(3000);
+                PrinterCenterResponse printerCenterResponse = getEvent(pedido.getImpressora()); // Pegar o erro, caso exista
+                if(!printerCenterResponse.getResult().equals("NONE")){
+
+                    // Dividir a string pelo caractere ":"   -> // EX: DEF_NO_RIBBON:CANCEL
+                    String[] partes = printerCenterResponse.getResult().split(":"); // Dividir a resposta e pegar a primeira parte que contem o erro
+                    String erro = partes[0];
+                    String accoes = partes[1];
+
+                    setEvent(erro, pedido.getImpressora());
+
+                    finalizarImpressao(pedido.getSessao());
+                    finalizarSequencia(pedido.getImpressora());
+                    ligarOuReinicializarHardwareImpressora(pedido.getImpressora());
+                    reinicializarComunicacoesComAImpressora(pedido.getImpressora());
+
+                    // Criar o metodo que vai lancar todos erros
+                    throw new ImpressoraSemFitaException(printerCenterResponse.getResult());
+                }
+            } catch (IOException | InterruptedException | ImpressoraSemFitaException e) {
+                throw new RuntimeException(e);
+            }
+        };
+        Thread thread = new Thread(task);
+        thread.start();
+    }
+
+    public void analisarErroOuRespostaRetornadaPeloPrinterCenter(PrinterCenterResponse printerCenterResponse, int indiceComando, Pedido pedido) throws PedidoComandoException, IOException {
+
+        if(printerCenterResponse.getError() != null){
+
+            LOGGER.error("Erro na operação " + indiceComando);
+            LOGGER.error("Codigo do erro (Printer Center): " + printerCenterResponse.getError().getCode());
+            LOGGER.error("Mensagem do erro (Printer Center): " + printerCenterResponse.getError().getMessage());
+
+            if(printerCenterResponse.getError().getMessage().contains("Communication session already reserved")){
+                finalizarImpressao(pedido.getSessao());
+                finalizarSequencia(pedido.getImpressora());
+                ligarOuReinicializarHardwareImpressora(pedido.getImpressora());
+                reinicializarComunicacoesComAImpressora(pedido.getImpressora());
+                throw new PedidoComandoException("Communication session already reserved");
+            }
+
+            //if(printerCenterResponse.getError().getMessage().contains("Printing session already in progress for the device")){
+            //    finalizarImpressao(pedido.getSessao());
+            //    finalizarSequencia();
+            //    ligarOuReinicializarHardwareImpressora();
+            //    reinicializarComunicacoesComAImpressora();
+            //    throw new PedidoComandoException("Printing session already in progress for the device");
+            //}
+
+            //if(printerCenterResponse.getError().getMessage().contains("Invalid printing session")){
+            //    finalizarImpressao(pedido.getSessao());
+            //    finalizarSequencia();
+            //    ligarOuReinicializarHardwareImpressora();
+            //    reinicializarComunicacoesComAImpressora();
+            //    throw new PedidoComandoException("Invalid printing session");
+            //}
+
+            //if(printerCenterResponse.getError().getMessage().contains("Communication session already reserved")){
+            //    finalizarImpressao(pedido.getSessao());
+            //    finalizarSequencia();
+            //    ligarOuReinicializarHardwareImpressora();
+            //    reinicializarComunicacoesComAImpressora();
+            //    throw new PedidoComandoException("Communication session already reserved");
+            //}
+
+            throw new PedidoComandoException("Erro na operação " + indiceComando + ". Mensagem do printer center: " + printerCenterResponse.getError().getMessage()); // Vai lancar a Excepption e fazer um break
+        }
     }
 
     public Fita getTipoFita(String status) {

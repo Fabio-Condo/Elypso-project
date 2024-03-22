@@ -42,8 +42,8 @@ public class ElypsoController {
     }
 
     @PostMapping("/bulk")
-    public ResponseEntity<String> uploadArquivoExcel(@RequestParam("file") MultipartFile file, @RequestParam("impressora") String impressora, @RequestParam("lado") Lado lado) throws IOException {
-        elypsoService.imprimirDadosDoExcel(file, impressora, lado);
+    public ResponseEntity<String> imprimirEmBulk(@RequestParam("file") MultipartFile file, @RequestParam("impressora") String impressora, @RequestParam("lado") Lado lado) throws IOException {
+        elypsoService.imprimirEmBulk(file, impressora, lado);
         return ResponseEntity.status(HttpStatus.OK).body("Dados dos clientes impressos com sucesso!");
     }
 
