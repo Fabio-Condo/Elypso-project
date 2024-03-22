@@ -15,6 +15,7 @@ import org.elypso.exception.domain.FileNotFoundException;
 import org.elypso.exception.domain.ImpressoraSemFitaException;
 import org.elypso.exception.domain.NomeOuNumeroVazioException;
 import org.elypso.exception.domain.PedidoComandoException;
+import org.elypso.repository.ElypsoRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,8 @@ import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Base64;
+import java.util.Date;
+import java.util.List;
 
 import static org.elypso.constatnt.ComandosElypsoPrimacy.*;
 import static org.elypso.constatnt.Constant.*;
@@ -47,10 +50,12 @@ public class ElypsoService {
 
     ElypsoCommandsService elypsoCommandsService;
     SocketService socketService;
+    ElypsoRepository elypsoRepository;
 
-    public ElypsoService(ElypsoCommandsService elypsoCommandsService, SocketService socketService) {
+    public ElypsoService(ElypsoCommandsService elypsoCommandsService, SocketService socketService, ElypsoRepository elypsoRepository) {
         this.elypsoCommandsService = elypsoCommandsService;
         this.socketService = socketService;
+        this.elypsoRepository = elypsoRepository;
     }
 
     public void imprimirDadosDoExcel(MultipartFile file, String impressora, Lado lado) throws IOException {
@@ -75,7 +80,7 @@ public class ElypsoService {
                 // Adicione mais campos conforme necessário
 
                 // Imprimindo os dados do funcionário
-                Pedido pedido= new Pedido(nomeCliente, numeroCliente, numeroApolice, impressora, Fita.RC_YMCKO, lado, gerarSessao());
+                Pedido pedido= new Pedido(nomeCliente, numeroCliente, numeroApolice, impressora, lado);
                 executarOperacaoUnica(pedido);
             }
 
@@ -91,6 +96,7 @@ public class ElypsoService {
 
         printerCenterResponse = verificarFita(pedido.getImpressora());
         Fita fitaSelecionada = getTipoFita(printerCenterResponse.getResult());
+        pedido.setNome(pedido.getNome().toUpperCase());
         pedido.setFita(fitaSelecionada);
         pedido.setSessao(gerarSessao());
 
@@ -123,12 +129,23 @@ public class ElypsoService {
             analisarErroOuRespostaRetornadaPeloPrinterCenter(printerCenterResponse, i, pedido);
             verificarEventoImpressoraELimparErro(pedido);
 
-            // TODO: metodo de salvar dados
-
         }
 
-        return pedido;
+        return salvarPedido(pedido);
     }
+
+    public Pedido salvarPedido(Pedido pedido){
+        pedido.setId(null); // Garantido que é um registo. Se remover, vai fazer updates do primeiro registo
+        pedido.setDate(new Date());
+        LOGGER.info("Salvando pedido: " + pedido.getNome());
+        return elypsoRepository.save(pedido);
+    }
+
+    public List<Pedido> listarPedidos(){
+        LOGGER.info("Listando os pedidos");
+        return elypsoRepository.findAll();
+    }
+
 
     public void verificarEventoImpressoraELimparErro(Pedido pedido){
         Runnable task = () -> {

@@ -1,9 +1,21 @@
 package org.elypso.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.elypso.enumerations.Fita;
 import org.elypso.enumerations.Lado;
 
+import javax.persistence.*;
+import java.util.Date;
+
+@Entity
+@Table(name = "pedido")
 public class Pedido {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false, updatable=false)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    private Long id;
 
     private String nome;
 
@@ -19,17 +31,25 @@ public class Pedido {
 
     private  String sessao;
 
+    private Date date;
+
     public Pedido() {
     }
 
-    public Pedido(String nome, String numeroCliente, String numeroApolice, String impressora, Fita fita, Lado lado, String sessao) {
+    public Pedido(String nome, String numeroCliente, String numeroApolice, String impressora, Lado lado) {
         this.nome = nome;
         this.numeroCliente = numeroCliente;
         this.numeroApolice = numeroApolice;
         this.impressora = impressora;
-        this.fita = fita;
         this.lado = lado;
-        this.sessao = sessao;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getNome() {
@@ -86,5 +106,13 @@ public class Pedido {
 
     public void setSessao(String sessao) {
         this.sessao = sessao;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 }
