@@ -30,12 +30,6 @@ public class ElypsoController {
         this.elypsoService = elypsoService;
     }
 
-
-    @PostMapping
-    public ResponseEntity<Pedido> salvarPedido(@RequestBody Pedido pedido){
-        return ResponseEntity.status(HttpStatus.CREATED).body(elypsoService.salvarPedido(pedido));
-    }
-
     @GetMapping
     public Page<Pedido> listarPedidos(@RequestParam(required = false, defaultValue = "") String name, Pageable pageable){
         return elypsoService.listarPedidos(name, pageable);
