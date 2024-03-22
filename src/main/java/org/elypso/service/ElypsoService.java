@@ -53,7 +53,7 @@ public class ElypsoService {
         this.socketService = socketService;
     }
 
-    public void imprimirDadosDoExcel(MultipartFile file, String impressora, Fita fita, Lado lado) throws IOException {
+    public void imprimirDadosDoExcel(MultipartFile file, String impressora, Lado lado) throws IOException {
         try (InputStream inputStream = file.getInputStream()) {
             Workbook workbook = new XSSFWorkbook(inputStream);
             Sheet sheet = workbook.getSheetAt(0); // Supondo que os dados estejam na primeira planilha
@@ -75,7 +75,7 @@ public class ElypsoService {
                 // Adicione mais campos conforme necessário
 
                 // Imprimindo os dados do funcionário
-                Pedido pedido= new Pedido(nomeCliente, numeroCliente, numeroApolice, impressora, fita, lado, gerarSessao());
+                Pedido pedido= new Pedido(nomeCliente, numeroCliente, numeroApolice, impressora, Fita.RC_YMCKO, lado, gerarSessao());
                 executarOperacaoUnica(pedido);
             }
 
@@ -87,9 +87,12 @@ public class ElypsoService {
 
     public Pedido executarOperacaoUnica(Pedido pedido) throws IOException, PedidoComandoException, NomeOuNumeroVazioException, FileNotFoundException {
 
-        pedido.setSessao(gerarSessao());
-
         PrinterCenterResponse printerCenterResponse = null;
+
+        printerCenterResponse = verificarFita(pedido.getImpressora());
+        Fita fitaSelecionada = getTipoFita(printerCenterResponse.getResult());
+        pedido.setFita(fitaSelecionada);
+        pedido.setSessao(gerarSessao());
 
         for (int i = 1; i < FINALIZAR_SEQUENCIA; i++) {
 
@@ -119,6 +122,8 @@ public class ElypsoService {
 
             analisarErroOuRespostaRetornadaPeloPrinterCenter(printerCenterResponse, i, pedido);
             verificarEventoImpressoraELimparErro(pedido);
+
+            // TODO: metodo de salvar dados
 
         }
 
@@ -339,6 +344,25 @@ public class ElypsoService {
         //System.out.println("error message: " + printerCenterResponse.getError().getMessage());
 
         return printerCenterResponse;
+    }
+
+    public Fita getTipoFita(String status) {
+        switch (status) {
+            case "Monochrome KO":
+                return Fita.RM_KO;
+            case "Color YMCKO":
+                return Fita.RC_YMCKO;
+            case "Monochrome Metallic Gold":
+                return Fita.RM_KMETALGOLD;
+            case "Monochrome White":
+                return Fita.RM_KWHITE;
+            case "Monochrome Metallic Silver":
+                return Fita.RM_KMETALSILVER;
+            case "Monochrome Black":
+                return Fita.RM_KBLACK;
+            default:
+                return null;
+        }
     }
 
     public void adicionarNomeNumeroNaImagem(String imagePath, String outputImagePath, Pedido pedido) throws NomeOuNumeroVazioException, IOException {
