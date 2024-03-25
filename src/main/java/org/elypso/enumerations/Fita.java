@@ -15,7 +15,7 @@ public enum Fita {
         this.description = description;
     }
 
-    public String getDescription() {  // if you call this, will return -> Not_started, In_progress, Done
+    public String getDescription() {
         return description;
     }
 }

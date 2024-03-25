@@ -1,6 +1,7 @@
 package org.elypso.controller;
 
 import org.elypso.Dto.PedidoDTO;
+import org.elypso.domain.HttpResponse;
 import org.elypso.domain.PrinterCenterResponse;
 import org.elypso.domain.Pedido;
 import org.elypso.enumerations.Fita;
@@ -36,9 +37,12 @@ public class ElypsoController {
     }
 
     @PostMapping("/bulk")
-    public ResponseEntity<String> imprimirEmBulk(@RequestParam("file") MultipartFile file, @RequestParam("impressora") String impressora, @RequestParam("lado") Lado lado) throws IOException {
+    public ResponseEntity<?> imprimirEmBulk(@RequestParam("file") MultipartFile file,
+                                                 @RequestParam("impressora") String impressora,
+                                                 @RequestParam("lado") Lado lado) throws IOException {
+
         elypsoServiceImpl.imprimirEmBulk(file, impressora, lado);
-        return ResponseEntity.status(HttpStatus.OK).body("Dados dos clientes impressos com sucesso!");
+        return response(HttpStatus.OK, "Dados dos clientes impressos com sucesso!");
     }
 
     @PostMapping("/executarOperacaoUnica")
@@ -111,5 +115,11 @@ public class ElypsoController {
     @GetMapping("/getEvent/{impressora}")
     public ResponseEntity<PrinterCenterResponse> getEvent(@PathVariable("impressora") String impressora) throws IOException {
         return ResponseEntity.status(HttpStatus.OK).body(elypsoServiceImpl.getEvent(impressora));
+    }
+
+    private ResponseEntity<HttpResponse> response(HttpStatus httpStatus, String message) {
+        return new ResponseEntity<>(
+                new HttpResponse(httpStatus.value(), httpStatus, httpStatus.getReasonPhrase().toUpperCase(), message),
+                httpStatus);
     }
 }
