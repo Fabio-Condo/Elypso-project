@@ -33,6 +33,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 
 import static org.elypso.constatnt.ComandosElypsoPrimacy.*;
 import static org.elypso.constatnt.Constant.*;
@@ -99,7 +100,7 @@ public class PedidoServiceImpl implements PedidoService {
         PrinterCenterResponse printerCenterResponse = null;
 
         printerCenterResponse = verificarFita(pedido.getImpressora());
-        Fita fitaSelecionada = getTipoFita(printerCenterResponse.getResult());
+        Fita fitaSelecionada = getTipoFitaByDescription(printerCenterResponse.getResult());
         pedido.setNome(pedido.getNome().toUpperCase());
         pedido.setFita(fitaSelecionada);
         pedido.setSessao(gerarSessao());
@@ -149,6 +150,11 @@ public class PedidoServiceImpl implements PedidoService {
     @Override
     public Page<Pedido> filter(PedidoFilter pedidoFilter, Pageable pageable){
         return pedidoRepository.filter(pedidoFilter, pageable);
+    }
+
+    @Override
+    public List<Pedido> filterForExcel(PedidoFilter pedidoFilter, Pageable pageable){
+        return pedidoRepository.filterForExcel(pedidoFilter, pageable);
     }
 
     @Override
@@ -385,8 +391,8 @@ public class PedidoServiceImpl implements PedidoService {
         }
     }
 
-    public Fita getTipoFita(String status) {
-        switch (status) {
+    public Fita getTipoFitaByDescription(String fita) {
+        switch (fita) {
             case "Monochrome KO":
                 return Fita.RM_KO;
             case "Color YMCKO":
@@ -401,6 +407,25 @@ public class PedidoServiceImpl implements PedidoService {
                 return Fita.RM_KBLACK;
             default:
                 return null;
+        }
+    }
+
+    public String getTipoFita(String fita) {
+        switch (fita) {
+            case "RM_KO":
+                return "Preto overlay";
+            case "RC_YMCKO":
+                return "Colorida";
+            case "RM_KMETALGOLD":
+                return "Dourada";
+            case "RM_KWHITE":
+                return "Branca";
+            case "RM_KMETALSILVER":
+                return "Prateada";
+            case "RM_KBLACK":
+                return "Preta";
+            default:
+                return "";
         }
     }
 

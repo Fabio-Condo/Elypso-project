@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 public interface PedidoService {
     void imprimirEmBulk(MultipartFile file, String impressora, Lado lado) throws IOException;
@@ -22,6 +23,8 @@ public interface PedidoService {
     Pedido salvarPedido(Pedido pedido);
 
     Page<Pedido> filter(PedidoFilter pedidoFilter, Pageable pageable);
+
+    List<Pedido> filterForExcel(PedidoFilter pedidoFilter, Pageable pageable);
 
     PrinterCenterResponse iniciarSequencia(String impressora) throws IOException;
 

@@ -45,6 +45,22 @@ public class PedidoRepositoryImpl implements PedidoRepositoryQuery {
         return new PageImpl<>(query.getResultList(), pageable, total(pedidoFilter));
     }
 
+    @Override
+    public List<Pedido> filterForExcel(PedidoFilter pedidoFilter, Pageable pageable) {
+        CriteriaBuilder builder = manager.getCriteriaBuilder();
+        CriteriaQuery<Pedido> criteria = builder.createQuery(Pedido.class);
+        Root<Pedido> root = criteria.from(Pedido.class);
+
+        getSortOrder(pedidoFilter, builder, criteria, root);
+
+        Predicate[] predicates = createRestrictions(pedidoFilter, builder, root);
+        criteria.where(predicates);
+
+        TypedQuery<Pedido> query = manager.createQuery(criteria);
+        addRestrictionsPagination(query, pageable);
+        return query.getResultList();
+    }
+
     private void addRestrictionsPagination(TypedQuery<?> query, Pageable pageable) {
         int currentPage = pageable.getPageNumber();
         int totalRecordsByPage = pageable.getPageSize();
