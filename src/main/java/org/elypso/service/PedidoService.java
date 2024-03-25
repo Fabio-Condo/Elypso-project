@@ -7,20 +7,21 @@ import org.elypso.enumerations.Lado;
 import org.elypso.exception.domain.FileNotFoundException;
 import org.elypso.exception.domain.NomeOuNumeroVazioException;
 import org.elypso.exception.domain.PedidoComandoException;
+import org.elypso.repository.filter.PedidoFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
-public interface ElypsoService {
+public interface PedidoService {
     void imprimirEmBulk(MultipartFile file, String impressora, Lado lado) throws IOException;
 
     Pedido executarOperacaoUnica(Pedido pedido) throws IOException, PedidoComandoException, NomeOuNumeroVazioException, FileNotFoundException;
 
     Pedido salvarPedido(Pedido pedido);
 
-    Page<Pedido> listarPedidos(String name, Pageable pageable);
+    Page<Pedido> filter(PedidoFilter pedidoFilter, Pageable pageable);
 
     PrinterCenterResponse iniciarSequencia(String impressora) throws IOException;
 

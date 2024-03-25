@@ -1,20 +1,17 @@
-package org.elypso.domain;
+package org.elypso.repository.filter;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.elypso.enumerations.Fita;
 import org.elypso.enumerations.Lado;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.*;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.util.Date;
 
-@Entity
-@Table(name = "pedido")
-public class Pedido {
+public class PedidoFilter {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false, updatable=false)
-    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    private String global;
+
     private Long id;
 
     private String nome;
@@ -31,19 +28,20 @@ public class Pedido {
     @Enumerated(EnumType.STRING)
     private Lado lado;
 
-    private  String sessao;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date beginDate;
 
-    private Date date;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date endDate;
 
-    public Pedido() {
+    private String pedidoOrderBy;
+
+    public String getGlobal() {
+        return global;
     }
 
-    public Pedido(String nome, String numeroCliente, String numeroApolice, String impressora, Lado lado) {
-        this.nome = nome;
-        this.numeroCliente = numeroCliente;
-        this.numeroApolice = numeroApolice;
-        this.impressora = impressora;
-        this.lado = lado;
+    public void setGlobal(String global) {
+        this.global = global;
     }
 
     public Long getId() {
@@ -62,6 +60,14 @@ public class Pedido {
         this.nome = nome;
     }
 
+    public String getNumeroCliente() {
+        return numeroCliente;
+    }
+
+    public void setNumeroCliente(String numeroCliente) {
+        this.numeroCliente = numeroCliente;
+    }
+
     public String getNumeroApolice() {
         return numeroApolice;
     }
@@ -76,14 +82,6 @@ public class Pedido {
 
     public void setImpressora(String impressora) {
         this.impressora = impressora;
-    }
-
-    public String getNumeroCliente() {
-        return numeroCliente;
-    }
-
-    public void setNumeroCliente(String numeroCliente) {
-        this.numeroCliente = numeroCliente;
     }
 
     public Fita getFita() {
@@ -102,19 +100,27 @@ public class Pedido {
         this.lado = lado;
     }
 
-    public String getSessao() {
-        return sessao;
+    public Date getBeginDate() {
+        return beginDate;
     }
 
-    public void setSessao(String sessao) {
-        this.sessao = sessao;
+    public void setBeginDate(Date beginDate) {
+        this.beginDate = beginDate;
     }
 
-    public Date getDate() {
-        return date;
+    public Date getEndDate() {
+        return endDate;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public String getPedidoOrderBy() {
+        return pedidoOrderBy;
+    }
+
+    public void setPedidoOrderBy(String pedidoOrderBy) {
+        this.pedidoOrderBy = pedidoOrderBy;
     }
 }

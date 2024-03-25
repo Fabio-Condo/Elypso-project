@@ -15,7 +15,8 @@ import org.elypso.exception.domain.FileNotFoundException;
 import org.elypso.exception.domain.ImpressoraSemFitaException;
 import org.elypso.exception.domain.NomeOuNumeroVazioException;
 import org.elypso.exception.domain.PedidoComandoException;
-import org.elypso.repository.ElypsoRepository;
+import org.elypso.repository.PedidoRepository;
+import org.elypso.repository.filter.PedidoFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -38,7 +39,7 @@ import static org.elypso.constatnt.Constant.*;
 
 
 @Service
-public class ElypsoServiceImpl implements ElypsoService{
+public class PedidoServiceImpl implements PedidoService {
 
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
     //private static final String IMAGES_PATH = "/app/imagens"; // Caminho do volume no contêiner// Use quando fizer deploymente no docker
@@ -51,12 +52,12 @@ public class ElypsoServiceImpl implements ElypsoService{
 
     ElypsoCommandsService elypsoCommandsService;
     SocketService socketService;
-    ElypsoRepository elypsoRepository;
+    PedidoRepository pedidoRepository;
 
-    public ElypsoServiceImpl(ElypsoCommandsService elypsoCommandsService, SocketService socketService, ElypsoRepository elypsoRepository) {
+    public PedidoServiceImpl(ElypsoCommandsService elypsoCommandsService, SocketService socketService, PedidoRepository pedidoRepository) {
         this.elypsoCommandsService = elypsoCommandsService;
         this.socketService = socketService;
-        this.elypsoRepository = elypsoRepository;
+        this.pedidoRepository = pedidoRepository;
     }
 
     @Override
@@ -142,12 +143,12 @@ public class ElypsoServiceImpl implements ElypsoService{
         pedido.setId(null); // Garantido que é um registo. Se remover, vai fazer updates do primeiro registo
         pedido.setDate(new Date());
         LOGGER.info("Salvando pedido: " + pedido.getNome());
-        return elypsoRepository.save(pedido);
+        return pedidoRepository.save(pedido);
     }
 
     @Override
-    public Page<Pedido> listarPedidos(String name, Pageable pageable) {
-        return elypsoRepository.findByAnyProperty(name, pageable);
+    public Page<Pedido> filter(PedidoFilter pedidoFilter, Pageable pageable){
+        return pedidoRepository.filter(pedidoFilter, pageable);
     }
 
     @Override
