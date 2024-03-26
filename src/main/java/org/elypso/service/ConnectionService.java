@@ -2,33 +2,39 @@ package org.elypso.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.net.ConnectException;
 import java.net.Socket;
 
-@Configuration
+@Component
 public class ConnectionService {
 
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
-    public Socket iniciarSocket(){
+    @Value("${printer.ip}")
+    private String printerIp;
+
+    @Value("${printer.port}")
+    private int printerPort;
+
+    public Socket iniciarSocket() throws IOException {
         try {
-            String ip = "localhost";
-            //String ip = "192.168.11.44";
-            int port = 18000;
-            Socket socket = new Socket(ip, port);
-            //socket.setSoTimeout(5000);
-            LOGGER.info("Evolis Printer center URL: {}:{} [connected]", ip, port);
+            Socket socket = new Socket(printerIp, printerPort);
+            LOGGER.info("URL do centro de impressão Evolis: {}:{} [conectado]", printerIp, printerPort);
             return socket;
-
-        } catch (Exception e) {
-            LOGGER.error("Failed to establish communication", e);
-            LOGGER.error("Possible reasons:");
-            LOGGER.error("- Check if TCP communication is activated");
-            LOGGER.error("- Check if the service is activated");
-            LOGGER.error("- Check your IP address and port");
-            return null;
+        } catch (ConnectException e) {
+            LOGGER.error("Conexão recusada ao tentar se conectar ao centro de impressão Evolis", e);
+            throw new ConnectException("Conexão recusada. Por favor, verifique se o serviço da impressora está ativado e verifique seu endereço IP e porta.");
+        } catch (IOException e) {
+            LOGGER.error("Falha ao estabelecer comunicação com o centro de impressão Evolis", e);
+            LOGGER.error("Possíveis razões:");
+            LOGGER.error("- Verifique se a comunicação TCP está ativada");
+            LOGGER.error("- Verifique se o serviço está ativado");
+            LOGGER.error("- Verifique seu endereço IP e porta");
+            throw e;
         }
-
     }
 }

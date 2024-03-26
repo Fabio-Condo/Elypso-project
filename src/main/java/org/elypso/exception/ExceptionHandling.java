@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.util.Objects;
 
 import static org.springframework.http.HttpStatus.*;
@@ -69,6 +70,12 @@ public class ExceptionHandling implements ErrorController {
     public ResponseEntity<HttpResponse> iOException(IOException exception) {
         LOGGER.error(exception.getMessage());
         return createHttpResponse(INTERNAL_SERVER_ERROR, ERROR_PROCESSING_FILE.toUpperCase());
+    }
+
+    @ExceptionHandler(ConnectException.class)
+    public ResponseEntity<HttpResponse> connectException(ConnectException exception) {
+        LOGGER.error(exception.getMessage());
+        return createHttpResponse(INTERNAL_SERVER_ERROR, exception.getMessage());
     }
 
     private ResponseEntity<HttpResponse> createHttpResponse(HttpStatus httpStatus, String message) {

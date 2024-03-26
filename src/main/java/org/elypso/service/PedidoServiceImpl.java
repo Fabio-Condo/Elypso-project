@@ -43,14 +43,6 @@ import static org.elypso.constatnt.Constant.*;
 public class PedidoServiceImpl implements PedidoService {
 
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
-    //private static final String IMAGES_PATH = "/app/imagens"; // Caminho do volume no contêiner// Use quando fizer deploymente no docker
-    public static final String IMAGES_PATH = "C:\\Users\\user\\Desktop\\spc-imagens-docker"; // Deployment no proproprio server ou run usando um jar
-
-    String frontImagePath   = IMAGES_PATH + FORWARD_SLASH + IMAGEM_FRONTAL_SEM_NOME;
-    String backImagePath    = IMAGES_PATH + FORWARD_SLASH + IMAGEM_TRAZEIRA;
-    String outputImagePath  = IMAGES_PATH + FORWARD_SLASH + IMAGEM_FRONTAL_GERADA_COM_DADOS;
-    String whiteImagePath    = IMAGES_PATH + FORWARD_SLASH + IMAGEM_BRANCA;
-
     ElypsoCommandsService elypsoCommandsService;
     ConnectionService connectionService;
     PedidoRepository pedidoRepository;
@@ -149,95 +141,112 @@ public class PedidoServiceImpl implements PedidoService {
 
     @Override
     public Page<Pedido> filter(PedidoFilter pedidoFilter, Pageable pageable){
+        LOGGER.info("Filtrando os pedidos");
         return pedidoRepository.filter(pedidoFilter, pageable);
     }
 
     @Override
     public List<Pedido> filterForExcel(PedidoFilter pedidoFilter, Pageable pageable){
+        LOGGER.info("Filtrando os pedidos para excel");
         return pedidoRepository.filterForExcel(pedidoFilter, pageable);
     }
 
     @Override
     public PrinterCenterResponse iniciarSequencia(String impressora) throws IOException {
+        LOGGER.info("Enviando pedido de inicialização de sequência");
         return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoIniciarSequencia(impressora));
     }
 
     @Override
     public PrinterCenterResponse inicializarProcessoImpressao(String impressora, String sessao) throws IOException {
+        LOGGER.info("Enviando pedido de inicialização de processo de impressão");
         return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoInicializarProcessoImpressao(impressora, sessao));
     }
 
     @Override
     public PrinterCenterResponse configurarProcessoImpressao(String impressora, Fita fita, String sessao) throws IOException {
+        LOGGER.info("Enviando pedido de configuração de processo de impressão");
         return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoConfigurarProcessoImpressao(impressora, fita, sessao));
     }
 
     @Override
     public PrinterCenterResponse definirBitmapImpressaoFrontal(Pedido pedido) throws NomeOuNumeroVazioException, IOException, FileNotFoundException {
         verificarExistenciaArquivoNoDiretorio(IMAGES_PATH, IMAGEM_FRONTAL_SEM_NOME);
-        adicionarNomeNumeroNaImagem(frontImagePath, outputImagePath, pedido);
-        String imagemEmDadosBase64 = converterBMPImageParaString(outputImagePath);
+        adicionarNomeNumeroNaImagem(FRONT_IMAGE_PATH, OUTPUT_IMAGE_PATH, pedido);
+        String imagemEmDadosBase64 = converterBMPImageParaString(OUTPUT_IMAGE_PATH);
         verificarExistenciaArquivoNoDiretorio(IMAGES_PATH, IMAGEM_FRONTAL_GERADA_COM_DADOS); // Depois de gerar a imagem frontal com dados (nome e numero), verifica se existe para impressao
+        LOGGER.info("Enviando pedido de definição de bitmap frontal");
         return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoDefinirBitmapImpressaoFrontal(imagemEmDadosBase64, pedido.getSessao()));
     }
 
     @Override
     public PrinterCenterResponse definirBitmapImpressaoFrontalBrancaUsadaCasoNaoSejaEscolhidoLadoFrontal(String sessao) throws IOException, FileNotFoundException {
         verificarExistenciaArquivoNoDiretorio(IMAGES_PATH, IMAGEM_BRANCA);
-        String imagemEmDadosBase64 = converterBMPImageParaString(whiteImagePath);
+        String imagemEmDadosBase64 = converterBMPImageParaString(WHITE_IMAGE_PATH);
         verificarExistenciaArquivoNoDiretorio(IMAGES_PATH, IMAGEM_FRONTAL_GERADA_COM_DADOS); // Depois de gerar a imagem frontal com dados (nome e numero), verifica se existe para impressao
+        LOGGER.info("Enviando pedido de definição de bitmap frontal da imagem branca");
         return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoDefinirBitmapImpressaoFrontal(imagemEmDadosBase64, sessao));
     }
 
     @Override
     public PrinterCenterResponse definirBitmapImpressaoTrazeiro(String sessao) throws IOException, FileNotFoundException {
         verificarExistenciaArquivoNoDiretorio(IMAGES_PATH, IMAGEM_TRAZEIRA);
-        String imagemEmDadosBase64 = converterBMPImageParaString(backImagePath);
+        String imagemEmDadosBase64 = converterBMPImageParaString(BACK_IMAGE_PATH);
+        LOGGER.info("Enviando pedido de definição de bitmap trazeiro");
         return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoDefinirBitmapImpressaoTrazeiro(imagemEmDadosBase64, sessao));
     }
 
     @Override
     public PrinterCenterResponse realizarImpressao(String sessao) throws IOException {
+        LOGGER.info("Enviando pedido de realização de impressão");
         return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoRealizarImpressao(sessao));
     }
 
     @Override
     public PrinterCenterResponse finalizarImpressao(String sessao) throws IOException {
+        LOGGER.info("Enviando pedido de finalização de impressão");
         return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoFinalizarImpressao(sessao));
     }
 
     @Override
     public PrinterCenterResponse finalizarSequencia(String impressora) throws IOException {
+        LOGGER.info("Enviando pedido de finalização de sequência");
         return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoFinalizarSequencia(impressora));
     }
 
     @Override
     public PrinterCenterResponse verificarStatus(String impressora) throws IOException {
+        LOGGER.info("Enviando pedido de verificação status");
         return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoVerificarStatusImpressora(impressora));
     }
 
     @Override
     public PrinterCenterResponse verificarFita(String impressora) throws IOException {
+        LOGGER.info("Enviando pedido de verificação do tipo de fita");
         return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoVerificarFita(2, impressora));
     }
 
     @Override
     public PrinterCenterResponse getEvent(String impressora) throws IOException {
+        LOGGER.info("Enviando pedido de obtenção de evento");
         return enviarPedidoViaSocket(elypsoCommandsService.criarComandoGetEvent(impressora));
     }
 
     @Override
     public PrinterCenterResponse setEvent(String erro, String impressora) throws IOException {
+        LOGGER.info("Enviando pedido de configuração de evento");
         return enviarPedidoViaSocket(elypsoCommandsService.criarComandoSetEvent(erro, impressora));
     }
 
     @Override
     public PrinterCenterResponse ligarOuReinicializarHardwareImpressora(String impressora) throws IOException {
+        LOGGER.info("Enviando pedido de ligar ou reinicializar hardware da impressora");
         return enviarPedidoViaSocket(elypsoCommandsService.gerarComandosLigarOuReinicializarHardwareImpressora(impressora));
     }
 
     @Override
     public PrinterCenterResponse reinicializarComunicacoesComAImpressora(String impressora) throws IOException {
+        LOGGER.info("Enviando pedido de reinicializar comunicações com impressora");
         return enviarPedidoViaSocket(elypsoCommandsService.gerarComandoReinicializarComunicacoesComAImpressora(impressora));
     }
 
