@@ -52,12 +52,12 @@ public class PedidoServiceImpl implements PedidoService {
     String whiteImagePath    = IMAGES_PATH + FORWARD_SLASH + IMAGEM_BRANCA;
 
     ElypsoCommandsService elypsoCommandsService;
-    SocketService socketService;
+    ConnectionService connectionService;
     PedidoRepository pedidoRepository;
 
-    public PedidoServiceImpl(ElypsoCommandsService elypsoCommandsService, SocketService socketService, PedidoRepository pedidoRepository) {
+    public PedidoServiceImpl(ElypsoCommandsService elypsoCommandsService, ConnectionService connectionService, PedidoRepository pedidoRepository) {
         this.elypsoCommandsService = elypsoCommandsService;
-        this.socketService = socketService;
+        this.connectionService = connectionService;
         this.pedidoRepository = pedidoRepository;
     }
 
@@ -267,7 +267,7 @@ public class PedidoServiceImpl implements PedidoService {
     @Override
     public PrinterCenterResponse enviarPedidoViaSocket(String request) throws IOException {
 
-        Socket socket = socketService.iniciarSocket();
+        Socket socket = connectionService.iniciarSocket();
 
         char[] data = new char[1024];
 

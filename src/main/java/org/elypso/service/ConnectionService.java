@@ -4,11 +4,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 
-import java.io.IOException;
 import java.net.Socket;
 
 @Configuration
-public class SocketService {
+public class ConnectionService {
 
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
