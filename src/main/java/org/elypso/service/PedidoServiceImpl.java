@@ -268,7 +268,7 @@ public class PedidoServiceImpl implements PedidoService {
         String base64EncodedImage = Base64.getEncoder().encodeToString(imageBytes);
 
         // Imprime a string codificada em base64
-        System.out.println(base64EncodedImage);
+        //System.out.println(base64EncodedImage);
 
         return base64EncodedImage;
     }
