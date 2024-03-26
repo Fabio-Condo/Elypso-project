@@ -1,4 +1,4 @@
-package org.elypso.Dto;
+package org.elypso.dto;
 
 import org.elypso.enumerations.Lado;
 

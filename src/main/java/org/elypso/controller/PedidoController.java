@@ -2,7 +2,7 @@ package org.elypso.controller;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.elypso.Dto.PedidoDTO;
+import org.elypso.dto.PedidoDTO;
 import org.elypso.domain.HttpResponse;
 import org.elypso.domain.PrinterCenterResponse;
 import org.elypso.domain.Pedido;
@@ -47,8 +47,8 @@ public class PedidoController {
 
     @PostMapping("/bulk")
     public ResponseEntity<?> imprimirEmBulk(@RequestParam("file") MultipartFile file,
-                                                 @RequestParam("impressora") String impressora,
-                                                 @RequestParam("lado") Lado lado) throws IOException {
+                                            @RequestParam("impressora") String impressora,
+                                            @RequestParam("lado") Lado lado) throws IOException {
 
         pedidoServiceImpl.imprimirEmBulk(file, impressora, lado);
         return response(HttpStatus.OK, "Dados dos clientes impressos com sucesso!");

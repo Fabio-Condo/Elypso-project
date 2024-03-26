@@ -1,4 +1,4 @@
-package org.elypso.service;
+package org.elypso.connection;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

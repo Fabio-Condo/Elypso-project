@@ -7,6 +7,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.elypso.commandsService.ElypsoCommandsService;
+import org.elypso.connection.PrinterCenterConnector;
 import org.elypso.domain.PrinterCenterResponse;
 import org.elypso.domain.Pedido;
 import org.elypso.enumerations.Fita;
