@@ -44,25 +44,24 @@ public class PedidoServiceImpl implements PedidoService {
 
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
     ElypsoCommandsService elypsoCommandsService;
-    ConnectionService connectionService;
+    PrinterCenterConnector printerCenterConnector;
     PedidoRepository pedidoRepository;
 
-    public PedidoServiceImpl(ElypsoCommandsService elypsoCommandsService, ConnectionService connectionService, PedidoRepository pedidoRepository) {
+    public PedidoServiceImpl(ElypsoCommandsService elypsoCommandsService, PrinterCenterConnector printerCenterConnector, PedidoRepository pedidoRepository) {
         this.elypsoCommandsService = elypsoCommandsService;
-        this.connectionService = connectionService;
+        this.printerCenterConnector = printerCenterConnector;
         this.pedidoRepository = pedidoRepository;
     }
 
-    @Override
     public void imprimirEmBulk(MultipartFile file, String impressora, Lado lado) throws IOException {
         try (InputStream inputStream = file.getInputStream()) {
             Workbook workbook = new XSSFWorkbook(inputStream);
             Sheet sheet = workbook.getSheetAt(0); // Supondo que os dados estejam na primeira planilha
 
+            int primeiraLinha = 3; // Inicia a leitura a partir da linha 3
             int totalLinhas = sheet.getPhysicalNumberOfRows();
-            System.out.println("Total de linhas no arquivo: " + totalLinhas);
 
-            for (int i = 3; i < totalLinhas; i++) { // Começa do 1 para pular a linha de cabeçalho
+            for (int i = primeiraLinha; i < totalLinhas; i++) {
                 Row row = sheet.getRow(i);
 
                 if (row == null) {
@@ -75,16 +74,22 @@ public class PedidoServiceImpl implements PedidoService {
                 String numeroApolice = row.getCell(4).getStringCellValue();
                 // Adicione mais campos conforme necessário
 
-                // Imprimindo os dados do funcionário
-                Pedido pedido= new Pedido(nomeCliente, numeroCliente, numeroApolice, impressora, lado);
-                executarOperacaoUnica(pedido);
+                // Imprimindo os dados do pedido
+                Pedido pedido = new Pedido(nomeCliente, numeroCliente, numeroApolice, impressora, lado);
+                try {
+                    executarOperacaoUnica(pedido);
+                } catch (PedidoComandoException | NomeOuNumeroVazioException | FileNotFoundException e) {
+                    LOGGER.error("Erro ao processar pedido: " + e.getMessage());
+                }
             }
 
             workbook.close();
-        } catch (PedidoComandoException | FileNotFoundException | NomeOuNumeroVazioException e) {
-            throw new RuntimeException(e);
+        } catch (IOException e) {
+            LOGGER.error("Erro ao abrir o arquivo Excel: " + e.getMessage());
+            throw e;
         }
     }
+
 
     @Override
     public Pedido executarOperacaoUnica(Pedido pedido) throws IOException, PedidoComandoException, NomeOuNumeroVazioException, FileNotFoundException {
@@ -276,7 +281,7 @@ public class PedidoServiceImpl implements PedidoService {
     @Override
     public PrinterCenterResponse enviarPedidoViaSocket(String request) throws IOException {
 
-        Socket socket = connectionService.iniciarSocket();
+        Socket socket = printerCenterConnector.iniciarSocket();
 
         char[] data = new char[1024];
 

@@ -10,7 +10,7 @@ import java.net.ConnectException;
 import java.net.Socket;
 
 @Component
-public class ConnectionService {
+public class PrinterCenterConnector {
 
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
